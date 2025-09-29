@@ -6,7 +6,7 @@
     "build": "vite build",
     "start": "vite preview",
     "lint": "next lint",
-    "backend": "cd ../OlinxRA-Backend && uvicorn main:app --reload --host 127.0.0.1 --port 8000",
+    "backend": "cd ../olinxra-backend && uvicorn main:app --reload --host 0.0.0.0 --port 8000",
     "dev:full": "concurrently \"npm run backend\" \"npm run dev\"",
     "dev:full:win": "concurrently \"npm run backend\" \"npm run dev\" --kill-others-on-fail"
   },
