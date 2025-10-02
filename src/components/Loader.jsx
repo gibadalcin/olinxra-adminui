@@ -5,7 +5,7 @@ export default function Loader({ height = "60vh" }) {
             height,
             display: "flex",
             alignItems: "center",
-            justifyContent: "center"
+            justifyContent: "center",
         }}>
             <div style={{
                 border: "6px solid #FFD700",

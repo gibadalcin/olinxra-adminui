@@ -126,7 +126,7 @@ export default function Register() {
         <div style={{
             width: "100vw",
             minHeight: "100vh",
-            overflowX: "hidden",
+            overflow: "hidden",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

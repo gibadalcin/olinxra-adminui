@@ -104,7 +104,7 @@ export default function ImageManager() {
     <div style={{
       width: "100vw",
       minHeight: "100vh",
-      overflowX: "hidden",
+      overflow: "hidden",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -114,7 +114,21 @@ export default function ImageManager() {
     }}>
 
       {/* Loader aparece junto com fundo e header */}
-      {(!showContent || loading || !usuario) && <Loader />}
+      {(!showContent || loading || !usuario) && (
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999
+        }}>
+          <Loader />
+        </div>
+      )}
 
       {/* Conteúdo principal aparece suavemente */}
       <FadeIn show={showContent}>

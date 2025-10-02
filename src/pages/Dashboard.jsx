@@ -49,9 +49,25 @@ export default function Dashboard() {
             backgroundSize: "cover",
             backgroundPosition: "center top",
             backgroundRepeat: "no-repeat",
+            overflow: "hidden", // Evita scroll durante transição
+            position: "relative", // Para posicionar o Loader
         }}>
-            {/* Loader aparece junto com fundo */}
-            {(!showContent || loading) && <Loader />}
+            {/* Loader aparece sobre o fundo, antes dos componentes */}
+            {(!showContent || loading) && (
+                <div style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100vw",
+                    height: "100vh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 10,
+                }}>
+                    <Loader />
+                </div>
+            )}
             <FadeIn show={showContent}>
                 {/* Conteúdo principal com fade-in */}
                 <div style={{
@@ -60,7 +76,6 @@ export default function Dashboard() {
                     display: showContent ? "flex" : "none",
                     alignItems: "center",
                     justifyContent: "center",
-                    overflow: "hidden"
                 }}>
                     <div style={{
                         background: "rgba(255,255,255,0.10)",
