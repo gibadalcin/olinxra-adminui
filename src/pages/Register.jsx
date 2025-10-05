@@ -20,12 +20,10 @@ export default function Register() {
     const [adminToDelete, setAdminToDelete] = useState(null);
     const [showContent, setShowContent] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 994);
+    const [formDirection, setFormDirection] = useState(window.innerWidth < 1420 ? "column" : "row");
     const navigate = useNavigate();
-
-    // Token do usuário autenticado
     const [token, setToken] = useState(null);
 
-    // Busca o token do usuário autenticado
     useEffect(() => {
         async function fetchToken() {
             const usuario = getAuth().currentUser;
@@ -39,7 +37,6 @@ export default function Register() {
         fetchToken();
     }, []);
 
-    // Carrega lista de administradores quando o token muda
     useEffect(() => {
         async function loadAdmins() {
             try {
@@ -61,7 +58,6 @@ export default function Register() {
         }
     }, [token]);
 
-    // Função para cadastrar novo administrador
     const handleRegister = async (e) => {
         e.preventDefault();
         setErro("");
@@ -107,7 +103,6 @@ export default function Register() {
         }
     };
 
-    // Função para excluir administrador
     const handleDeleteAdmin = async () => {
         if (!adminToDelete) {
             setErro("Nenhum administrador selecionado para exclusão.");
@@ -140,7 +135,10 @@ export default function Register() {
     }, []);
 
     useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth <= 994);
+        function handleResize() {
+            setIsMobile(window.innerWidth <= 994);
+            setFormDirection(window.innerWidth < 1420 ? "column" : "row");
+        }
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
@@ -154,7 +152,7 @@ export default function Register() {
             alignItems: "center",
             justifyContent: "center",
             backgroundImage: "url('/login.svg')",
-            backgroundPosition: "left top",
+            backgroundPosition: "center bottom",
             backgroundRepeat: "no-repeat",
         }}>
             <FadeIn show={showContent}>
@@ -164,24 +162,42 @@ export default function Register() {
                     display: showContent ? "flex" : "none",
                     alignItems: "center",
                     justifyContent: "center",
+                    flexDirection: isMobile ? "column" : "row",
                 }}>
+                    {/* Header lateral no desktop */}
+                    {!isMobile && (
+                        <div style={{
+                            backgroundColor: "rgba(255, 255, 255, 0.1)",
+                            border: "1px solid rgba(255,255,255,0.18)",
+                            backdropFilter: "blur(18px)",
+                            WebkitBackdropFilter: "blur(18px)",
+                            paddingInline: isMobile ? "1rem" : "4rem",
+                            width: "20%",
+                            height: "100%",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}>
+                            <Header />
+                        </div>
+                    )}
+                    {/* Conteúdo principal */}
                     <div style={{
-                        backgroundColor: "rgba(255, 255, 255, 0.1)",
-                        borderRadius: "8px",
                         padding: isMobile ? "1rem" : "2rem",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        borderRadius: "16px",
+                        width: '100%',
+                        height: '100%',
+                        justifyContent: "center",
+                        alignItems: "center",
+                        display: "flex",
+                        flexDirection: "column",
                         border: "1px solid rgba(255,255,255,0.18)",
                         backdropFilter: "blur(18px)",
                         WebkitBackdropFilter: "blur(18px)",
-                        width: "100%",
-                        height: "100%",
-                        margin: "0 auto",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center"
+                        textAlign: "center",
                     }}>
-                        <Header />
+                        {isMobile && <Header />}
                         <MainTitle isMobile={isMobile}>Cadastrar novo administrador</MainTitle>
                         <AdminForm
                             email={email}
@@ -193,6 +209,15 @@ export default function Register() {
                             erro={erro}
                             sucesso={sucesso}
                             navigate={navigate}
+                            formStyle={{
+                                display: "flex",
+                                flexDirection: formDirection,
+                                flexWrap: "wrap",
+                                gap: "1rem",
+                                width: "100%",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
                         />
                         {/* Lista de administradores */}
                         <div
@@ -221,15 +246,12 @@ export default function Register() {
                                 onDelete={admin => { setModalOpen(true); setAdminToDelete(admin); }}
                             />
                         </div>
-
-                        {/* Modal de confirmação de exclusão */}
                         <DeleteAdminModal
                             open={modalOpen}
                             adminToDelete={adminToDelete}
                             onConfirm={handleDeleteAdmin}
                             onCancel={() => { setModalOpen(false); setAdminToDelete(null); }}
                         />
-
                         <Copyright />
                     </div>
                 </div>

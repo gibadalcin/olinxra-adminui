@@ -113,7 +113,7 @@ export default function ImageManager() {
       alignItems: "center",
       justifyContent: "center",
       backgroundImage: "url('/login.svg')",
-      backgroundPosition: "left bottom",
+      backgroundPosition: "center bottom",
       backgroundRepeat: "no-repeat"
     }}>
 
@@ -160,8 +160,7 @@ export default function ImageManager() {
           <div style={{
             padding: isMobile ? "1rem" : "2rem",
             borderRadius: "16px",
-            boxShadow: "0 4px 32px rgba(0,0,0,0.25)",
-            width: '100%',
+            width: '100% ',
             height: '100%',
             justifyContent: "center",
             alignItems: "center",

@@ -93,7 +93,7 @@ export default function Content() {
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundImage: "url('/login.svg')",
-                backgroundPosition: "left bottom",
+                backgroundPosition: "right bottom",
                 backgroundRepeat: "no-repeat",
                 overflow: "hidden",
             }}
@@ -118,6 +118,7 @@ export default function Content() {
                     "&::-webkit-scrollbar": {
                         display: "none",
                     },
+                    paddingTop: isMobile ? "1rem" : "4rem",
                 }}
             >
                 <Header />

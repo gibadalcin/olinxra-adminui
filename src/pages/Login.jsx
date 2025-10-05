@@ -94,7 +94,6 @@ export default function Login() {
                         style={{
                             padding: isMobile ? "1rem" : "2rem",
                             borderRadius: "16px",
-                            boxShadow: "0 4px 32px rgba(0,0,0,0.25)",
                             width: isMobile ? "100%" : "60%",
                             minWidth: "260px",
                             height: "100%",
