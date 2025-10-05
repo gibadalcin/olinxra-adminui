@@ -64,20 +64,31 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, o
                 letterSpacing: "0.2px"
             }} title={img.nome}>{img.nome}</p>
             {(isAdmin || (usuario && ownerUid === usuario.uid)) ? (
-                <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%", gap: 0 }}>
+                <div style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%",
+                    gap: 0,
+                    maxWidth: "220px" // <-- garante que os botões não ultrapassem o card
+                }}>
                     <CustomButton
                         onClick={() => onAssociate(img._id)}
                         style={{
                             background: "linear-gradient(90deg, #00e913ff 0%, #04aa20ff 100%)",
                             textShadow: "0 1px 4px rgba(0,0,0,0.15)",
                             width: "50%",
+                            minWidth: 0,
+                            maxWidth: "110px", // metade do card
                             height: "24px",
-                            borderRadius: "08px 0 0 8px",
+                            borderRadius: "8px 0 0 8px",
                             transition: "box-shadow 0.2s",
                             marginRight: "2px",
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "center"
+                            justifyContent: "center",
+                            boxSizing: "border-box"
                         }}
                         aria-label="Associar Conteúdo"
                     >
@@ -89,13 +100,16 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, o
                             background: "linear-gradient(90deg, #d32f2f 0%, #ff6f60 100%)",
                             textShadow: "0 1px 4px rgba(0,0,0,0.15)",
                             width: "50%",
+                            minWidth: 0,
+                            maxWidth: "110px", // metade do card
                             height: "24px",
                             borderRadius: "0 8px 8px 0",
                             transition: "box-shadow 0.2s",
                             marginLeft: "2px",
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "center"
+                            justifyContent: "center",
+                            boxSizing: "border-box"
                         }}
                         aria-label="Excluir"
                     >

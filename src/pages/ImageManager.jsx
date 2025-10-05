@@ -140,26 +140,39 @@ export default function ImageManager() {
           width: "100vw",
           minHeight: "100vh",
           display: showContent ? "flex" : "none",
-          alignItems: "center",
-          justifyContent: "center"
         }}>
           <div style={{
             backgroundColor: "rgba(255, 255, 255, 0.1)",
             borderRadius: "8px",
-            padding: isMobile ? "1rem" : "2rem",
             boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
             border: "1px solid rgba(255,255,255,0.18)",
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
-            width: "100%",
+            paddingInline: isMobile ? "1rem" : "4rem",
+            width: "20%",
             height: "100%",
-            marginTop: isMobile ? "0" : "4rem",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            //justifyContent: "center"
+            justifyContent: "center",
           }}>
             <Header />
+          </div>
+          <div style={{
+            padding: isMobile ? "1rem" : "2rem",
+            borderRadius: "16px",
+            boxShadow: "0 4px 32px rgba(0,0,0,0.25)",
+            width: '100%',
+            height: '100%',
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            flexDirection: "column",
+            border: "1px solid rgba(255,255,255,0.18)",
+            backdropFilter: "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+            textAlign: "center",
+          }}>
+
             <MainTitle isMobile={isMobile}>Gerenciamento de Imagens</MainTitle>
 
             {/* Formulário de upload modularizado */}
