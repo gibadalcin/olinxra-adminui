@@ -7,8 +7,8 @@ import Header from "../components/Header";
 import Copyright from "../components/Copyright";
 import MainTitle from "../components/MainTitle";
 import CustomButton from "../components/CustomButton";
-
-const USER_ADMIN_EMAIL = import.meta.env.VITE_USER_ADMIN_EMAIL;
+import UserInfo from "../components/UserInfo";
+import DashboardActions from "../components/DashboardActions";
 
 export default function Dashboard() {
     const [usuario, setUsuario] = useState(null);
@@ -92,50 +92,13 @@ export default function Dashboard() {
                     }}>
                         <Header />
                         <MainTitle isMobile={isMobile}>Dashboard</MainTitle>
-                        <p style={{ color: "#fff", fontSize: isMobile ? "1em" : "1.1em" }}>
-                            <strong>E-mail:</strong> {usuario?.email}
-                        </p>
-                        {usuario?.photoURL && (
-                            <img
-                                src={usuario.photoURL}
-                                alt="Avatar"
-                                style={{
-                                    borderRadius: "50%",
-                                    width: isMobile ? "60px" : "80px",
-                                    margin: "1rem auto",
-                                }}
-                            />
-                        )}
-                        <div style={{ marginTop: "2rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-                            <CustomButton
-                                onClick={() => navigate("/images")}
-                                style={{
-                                    background: "#FFD700",
-                                    color: "#151515",
-                                    borderStyle: "solid",
-                                    borderWidth: "1px",
-                                    borderColor: "rgba(255,255,255,0.90)",
-                                    textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                                }}
-                            >
-                                Gerenciar Imagens
-                            </CustomButton>
-                            {usuario?.email === USER_ADMIN_EMAIL && (
-                                <CustomButton
-                                    onClick={() => navigate("/register")}
-                                    style={{
-                                        background: "#012E57",
-                                        color: "#fff",
-                                        borderStyle: "solid",
-                                        borderWidth: "1px",
-                                        borderColor: "rgba(255,255,255,0.90)",
-                                        textShadow: "0 1px 2px rgba(0,0,0,0.50)",
-                                    }}
-                                >
-                                    Cadastrar Administrador
-                                </CustomButton>
-                            )}
-                        </div>
+                        <UserInfo usuario={usuario} isMobile={isMobile} />
+                        <DashboardActions
+                            usuario={usuario}
+                            isMobile={isMobile}
+                            onImages={() => navigate("/images")}
+                            onRegister={() => navigate("/register")}
+                        />
                         <CustomButton
                             onClick={handleLogout}
                             style={{

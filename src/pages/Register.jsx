@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import MainTitle from "../components/MainTitle";
-import CustomButton from "../components/CustomButton";
 import Copyright from "../components/Copyright";
 import { useNavigate } from "react-router-dom";
 import FadeIn from "../components/FadeIn";
 import Header from "../components/Header";
-import { fetchAdmins, createAdmin, deleteAdmin } from "../api"; // ajuste o import
+import { fetchAdmins, createAdmin, deleteAdmin } from "../api";
 import { getAuth } from "firebase/auth";
+import AdminForm from "../components/AdminForm";
+import AdminList from "../components/AdminList";
+import DeleteAdminModal from "../components/DeleteAdminModal";
 
 export default function Register() {
     const [email, setEmail] = useState("");
@@ -20,9 +22,10 @@ export default function Register() {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 994);
     const navigate = useNavigate();
 
-    // Exemplo de obtenção de token (ajuste conforme sua autenticação)
+    // Token do usuário autenticado
     const [token, setToken] = useState(null);
 
+    // Busca o token do usuário autenticado
     useEffect(() => {
         async function fetchToken() {
             const usuario = getAuth().currentUser;
@@ -36,6 +39,7 @@ export default function Register() {
         fetchToken();
     }, []);
 
+    // Carrega lista de administradores quando o token muda
     useEffect(() => {
         async function loadAdmins() {
             try {
@@ -45,10 +49,10 @@ export default function Register() {
                     return;
                 }
                 const idToken = await usuario.getIdToken();
-                const adminsList = await fetchAdmins(idToken); // Correto!
+                const adminsList = await fetchAdmins(idToken);
                 setAdmins(adminsList);
             } catch (err) {
-                setErro("Erro ao buscar administradores: " + err.message);
+                setErro("Erro ao buscar administradores: " + (err?.message || err));
                 console.error("Erro ao buscar admins:", err);
             }
         }
@@ -57,55 +61,77 @@ export default function Register() {
         }
     }, [token]);
 
-    // Cadastro usando API
+    // Função para cadastrar novo administrador
     const handleRegister = async (e) => {
         e.preventDefault();
         setErro("");
         setSucesso("");
+        if (!email || !senha) {
+            setErro("Preencha todos os campos.");
+            return;
+        }
+        if (!token) {
+            setErro("Usuário não autenticado. Faça login novamente.");
+            return;
+        }
         try {
             const res = await createAdmin(email, senha, token);
-            if (res.ok) {
+            if (res && res.ok) {
                 setSucesso("Administrador cadastrado com sucesso!");
                 setEmail("");
                 setSenha("");
-                const adminsList = await fetchAdmins(token);
-                setAdmins(adminsList);
-            } else {
+                try {
+                    const adminsList = await fetchAdmins(token);
+                    setAdmins(adminsList);
+                } catch (err) {
+                    setErro("Administrador cadastrado, mas erro ao atualizar lista: " + (err?.message || err));
+                }
+            } else if (res) {
                 const data = await res.json();
-                // Ajuste para mensagem amigável
                 if (
-                    (data.detail && (
+                    data.detail && (
                         data.detail.includes("EMAIL_EXISTS") ||
                         data.detail.includes("já existe um usuário com este e-mail") ||
                         data.detail.includes("already exists")
-                    ))
+                    )
                 ) {
                     setErro("Já existe um administrador cadastrado com este e-mail.");
                 } else {
                     setErro(data.message || data.detail || "Erro ao cadastrar.");
                 }
+            } else {
+                setErro("Erro inesperado na resposta da API.");
             }
         } catch (err) {
-            setErro("Erro ao cadastrar: " + err.message);
+            setErro("Erro ao cadastrar: " + (err?.message || err));
         }
     };
 
-    // Exclusão usando API
+    // Função para excluir administrador
     const handleDeleteAdmin = async () => {
-        if (!adminToDelete) return;
+        if (!adminToDelete) {
+            setErro("Nenhum administrador selecionado para exclusão.");
+            return;
+        }
+        if (!token) {
+            setErro("Usuário não autenticado. Faça login novamente.");
+            return;
+        }
         setErro("");
         try {
             const res = await deleteAdmin(adminToDelete.uid, token);
-            if (res.ok) {
+            if (res && res.ok) {
                 setAdmins(admins.filter(a => a.uid !== adminToDelete.uid));
                 setModalOpen(false);
                 setAdminToDelete(null);
-            } else {
+            } else if (res) {
                 const data = await res.json();
                 setErro(data.message || "Erro ao excluir.");
+            } else {
+                setErro("Erro inesperado na resposta da API.");
             }
         } catch (err) {
-            setErro("Erro ao excluir: " + err.message);
+            setErro("Erro ao excluir: " + (err?.message || err));
         }
     };
 
@@ -119,8 +145,11 @@ export default function Register() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Defina o email do master (ajuste conforme sua configuração/env)
-    const masterEmail = import.meta.env.VITE_USER_ADMIN_EMAIL;
+    // Email do administrador master (do .env)
+    const masterEmail = (typeof import.meta.env !== "undefined" && import.meta.env.VITE_USER_ADMIN_EMAIL) ? import.meta.env.VITE_USER_ADMIN_EMAIL : "";
+    if (!masterEmail) {
+        console.warn("VITE_USER_ADMIN_EMAIL não está definida ou está vazia. Verifique o arquivo .env e reinicie o servidor.");
+    }
 
     return (
         <div style={{
@@ -159,82 +188,17 @@ export default function Register() {
                     }}>
                         <Header />
                         <MainTitle isMobile={isMobile}>Cadastrar novo administrador</MainTitle>
-                        <form
-                            onSubmit={handleRegister}
-                            style={{
-                                marginBottom: isMobile ? "1rem" : "2rem",
-                                display: "flex",
-                                flexDirection: isMobile ? "column" : "row",
-                                gap: isMobile ? ".8rem" : "1rem",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: "100%",
-                                maxWidth: "500px",
-                                margin: "0 auto"
-                            }}
-                        >
-                            <input
-                                type="email"
-                                placeholder="E-mail"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                style={{
-                                    background: "#fff",
-                                    borderRadius: "6px",
-                                    padding: "0.5rem",
-                                    width: isMobile ? "80%" : "auto",
-                                    border: "none",
-                                    fontSize: "16px"
-                                }}
-                            />
-                            <input
-                                type="password"
-                                placeholder="Senha"
-                                value={senha}
-                                onChange={(e) => setSenha(e.target.value)}
-                                required
-                                style={{
-                                    background: "#fff",
-                                    borderRadius: "6px",
-                                    padding: "0.5rem",
-                                    width: isMobile ? "80%" : "auto",
-                                    border: "none",
-                                    fontSize: "16px"
-                                }}
-                            />
-                            <CustomButton
-                                type="submit"
-                                style={{
-                                    background: "#FFD700",
-                                    color: "#151515",
-                                    textShadow: "2px 2px 4px rgba(0,0,0,0.15)",
-                                    width: isMobile ? "80%" : "auto",
-                                    borderStyle: "solid",
-                                    borderWidth: "1px",
-                                    borderColor: "rgba(255,255,255,0.90)",
-                                }}>
-                                Cadastrar
-                            </CustomButton>
-                            <CustomButton
-                                type="button"
-                                onClick={() => navigate("/dashboard")}
-                                style={{
-                                    background: "#012E57",
-                                    color: "#fff",
-                                    textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                                    width: isMobile ? "80%" : "auto",
-                                    borderStyle: "solid",
-                                    borderWidth: "1px",
-                                    borderColor: "rgba(255,255,255,0.90)",
-                                }}
-                            >
-                                Dashboard
-                            </CustomButton>
-                        </form>
-                        {erro && <p style={{ color: "red", marginTop: "1rem" }}>{erro}</p>}
-                        {sucesso && <p style={{ color: "green", marginTop: "1rem" }}>{sucesso}</p>}
-
+                        <AdminForm
+                            email={email}
+                            senha={senha}
+                            setEmail={setEmail}
+                            setSenha={setSenha}
+                            handleRegister={handleRegister}
+                            isMobile={isMobile}
+                            erro={erro}
+                            sucesso={sucesso}
+                            navigate={navigate}
+                        />
                         {/* Lista de administradores */}
                         <div
                             style={{
@@ -251,116 +215,26 @@ export default function Register() {
                                 maxHeight: isMobile ? "260px" : "340px",
                                 overflowY: "auto",
                                 scrollbarWidth: "thin",
-                                scrollbarColor: "#cccccc #0000",
+                                scrollbarColor: "#cccccc #0000"
                             }}
                             className="admin-list-scroll"
                         >
                             <h2 style={{ color: "#fff", fontSize: isMobile ? "1.2em" : "1.4em", marginBottom: "1rem" }}>Administradores</h2>
-                            {admins.length === 0 ? (
-                                <p style={{ color: "#fff" }}>Nenhum administrador cadastrado.</p>
-                            ) : (
-                                <div style={{
-                                    display: "flex",
-                                    flexWrap: "wrap",
-                                    gap: "1rem",
-                                    justifyContent: "center",
-                                    alignItems: "center"
-                                }}>
-                                    {admins.map(admin => (
-                                        <div
-                                            key={admin.uid}
-                                            style={{
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                background: "rgba(255,255,255,0.18)",
-                                                borderRadius: "12px",
-                                                padding: isMobile ? "0.3rem 0.8rem" : "0.4rem 1.2rem",
-                                                margin: "0.2rem",
-                                                boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
-                                                fontSize: isMobile ? "1em" : "1.1em",
-                                                wordBreak: "break-word",
-                                                border: admin.email === masterEmail ? "1px solid #d32f2f" : "1px solid #2ecc40",
-                                                maxWidth: "320px"
-                                            }}
-                                        >
-                                            <span style={{
-                                                color: "#012E57",
-                                                fontWeight: 500,
-                                                marginRight: "0.7rem",
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis",
-                                                whiteSpace: "nowrap",
-                                                maxWidth: "180px"
-                                            }}>
-                                                {admin.email}
-                                            </span>
-                                            <button
-                                                onClick={() => { setModalOpen(true); setAdminToDelete(admin); }}
-                                                style={{
-                                                    background: "none",
-                                                    border: "none",
-                                                    color: "#d32f2f",
-                                                    fontSize: "1.5em",
-                                                    cursor: "pointer",
-                                                    padding: 0,
-                                                    marginLeft: "0.2rem",
-                                                    display: "flex",
-                                                    alignItems: "center"
-                                                }}
-                                                title="Excluir administrador"
-                                            >
-                                                <b>&times;</b>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                            <AdminList
+                                admins={admins}
+                                masterEmail={masterEmail}
+                                isMobile={isMobile}
+                                onDelete={admin => { setModalOpen(true); setAdminToDelete(admin); }}
+                            />
                         </div>
 
                         {/* Modal de confirmação de exclusão */}
-                        {modalOpen && (
-                            <div style={{
-                                position: "fixed",
-                                // top: 0, width: "100vw", height: "100vh",
-                                background: "rgba(0,0,0,0.45)",
-                                //display: "flex", alignItems: "center", justifyContent: "center",
-                                zIndex: 9999
-                            }}>
-                                <div style={{
-                                    background: "#fff",
-                                    borderRadius: "10px",
-                                    padding: "2rem",
-                                    boxShadow: "0 4px 24px rgba(0,0,0,0.18)",
-                                    minWidth: "320px",
-                                    textAlign: "center"
-                                }}>
-                                    <h2 style={{ color: "#d32f2f", marginBottom: "1rem" }}>Confirmar exclusão</h2>
-                                    <p>Deseja realmente excluir o administrador <b>{adminToDelete?.email}</b>?</p>
-                                    <div style={{
-                                        marginTop: "2rem",
-                                        display: "flex",
-                                        gap: "1rem",
-                                        justifyContent: "center"
-                                    }}>
-                                        <CustomButton
-                                            onClick={handleDeleteAdmin}
-                                            style={{ background: "#d32f2f", color: "#fff" }}
-                                        >
-                                            Excluir
-                                        </CustomButton>
-                                        <CustomButton
-                                            onClick={() => { setModalOpen(false); setAdminToDelete(null); }}
-                                            style={{
-                                                background: "#012E57",
-                                                color: "#fff",
-                                            }}
-                                        >
-                                            Cancelar
-                                        </CustomButton>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                        <DeleteAdminModal
+                            open={modalOpen}
+                            adminToDelete={adminToDelete}
+                            onConfirm={handleDeleteAdmin}
+                            onCancel={() => { setModalOpen(false); setAdminToDelete(null); }}
+                        />
 
                         <Copyright />
                     </div>

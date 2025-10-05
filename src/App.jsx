@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import ImageManager from "./pages/ImageManager";
 import Register from "./pages/Register";
 import PrivateRoute from "./components/PrivateRoute";
+import Content from "./pages/Content";
 
 function App() {
   return (
@@ -31,6 +32,14 @@ function App() {
           element={
             <PrivateRoute>
               <Register />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/conteudo"
+          element={
+            <PrivateRoute>
+              <Content />
             </PrivateRoute>
           }
         />

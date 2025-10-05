@@ -8,6 +8,8 @@ import Header from "../components/Header";
 import Copyright from "../components/Copyright";
 import MainTitle from "../components/MainTitle";
 import FadeIn from "../components/FadeIn";
+import LoginHeader from "../components/LoginHeader";
+import LoginForm from "../components/LoginForm";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -72,72 +74,16 @@ export default function Login() {
                         WebkitBackdropFilter: "blur(18px)",
                     }}
                 >
-                    <div style={{
-                        flexDirection: "column",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "1rem",
-                        marginBottom: "1.5rem",
-                    }}>
-                        <Header />
-                        <MainTitle isMobile={isMobile}>Login</MainTitle>
-                    </div>
-                    <form
-                        onSubmit={handleLogin}
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "1rem",
-                        }}
-                    >
-                        <input
-                            type="email"
-                            placeholder="E-mail"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            style={{
-                                padding: "0.75rem",
-                                borderRadius: "6px",
-                                border: "1px solid #555",
-                                fontSize: isMobile ? "1em" : "1.1em",
-                            }}
-                        />
-                        <input
-                            type="password"
-                            placeholder="Senha"
-                            value={senha}
-                            onChange={(e) => setSenha(e.target.value)}
-                            required
-                            style={{
-                                padding: "0.75rem",
-                                borderRadius: "6px",
-                                border: "1px solid #555",
-                                fontSize: isMobile ? "1em" : "1.1em",
-                            }}
-                        />
-                        <CustomButton
-                            type="submit"
-                            // NOVO: Desativa o botão enquanto carrega
-                            disabled={isLoading}
-                            style={{
-                                padding: "0.75rem",
-                                borderRadius: "6px",
-                                background: "#FFD700",
-                                // NOVO: Mudar a opacidade e cursor
-                                opacity: isLoading ? 0.7 : 1,
-                                boxShadow: "0 2px 10px rgba(0,0,0,0.25)",
-                                color: "#151515",
-                                border: "none",
-                                fontSize: isMobile ? "1em" : "1.1em",
-                                cursor: isLoading ? 'not-allowed' : 'pointer'
-                            }}
-                        >
-                            {/* NOVO: Mudar o texto do botão */}
-                            {isLoading ? "Aguarde..." : "Entrar"}
-                        </CustomButton>
-                    </form>
+                    <LoginHeader isMobile={isMobile} />
+                    <LoginForm
+                        email={email}
+                        setEmail={setEmail}
+                        senha={senha}
+                        setSenha={setSenha}
+                        isLoading={isLoading}
+                        handleLogin={handleLogin}
+                        isMobile={isMobile}
+                    />
                     {erro && (
                         <p
                             style={{
