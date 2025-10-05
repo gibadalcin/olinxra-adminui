@@ -145,12 +145,6 @@ export default function Register() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Email do administrador master (do .env)
-    const masterEmail = (typeof import.meta.env !== "undefined" && import.meta.env.VITE_USER_ADMIN_EMAIL) ? import.meta.env.VITE_USER_ADMIN_EMAIL : "";
-    if (!masterEmail) {
-        console.warn("VITE_USER_ADMIN_EMAIL não está definida ou está vazia. Verifique o arquivo .env e reinicie o servidor.");
-    }
-
     return (
         <div style={{
             width: "100vw",
@@ -222,7 +216,6 @@ export default function Register() {
                             <h2 style={{ color: "#fff", fontSize: isMobile ? "1.2em" : "1.4em", marginBottom: "1rem" }}>Administradores</h2>
                             <AdminList
                                 admins={admins}
-                                masterEmail={masterEmail}
                                 isMobile={isMobile}
                                 onDelete={admin => { setModalOpen(true); setAdminToDelete(admin); }}
                             />

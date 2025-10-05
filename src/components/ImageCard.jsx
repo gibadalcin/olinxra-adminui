@@ -1,44 +1,55 @@
 import React from "react";
 import CustomButton from "../components/CustomButton";
 import { FiPlus, FiX } from "react-icons/fi";
-
-const USER_ADMIN_EMAIL = import.meta.env.VITE_USER_ADMIN_EMAIL;
+import useIsMasterAdmin from "../hooks/useIsMasterAdmin";
 
 export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, onAssociate }) {
+    // Trate o risco de undefined
+    const ownerUid = img.owner_uid || "";
+    // Se ownerUid vier vazio, isMaster será false
+    const isMaster = Boolean(useIsMasterAdmin({ uid: ownerUid }));
+
     // Glass color: vermelho para master, verde para outros admins
-    const isMaster = img.owner_email === USER_ADMIN_EMAIL;
     const glassColor = isMaster
         ? "rgba(255, 0, 0, 0.12)" // leve vermelho
         : "rgba(0, 180, 60, 0.12)"; // leve verde
+
     return (
-        <div key={img._id} style={{
-            background: glassColor,
-            borderRadius: "14px",
-            padding: isMobile ? "0.5rem" : "1rem",
-            boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
-            minWidth: isMobile ? "180px" : "220px",
-            maxWidth: "260px",
-            width: isMobile ? "48vw" : "240px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "0.5rem",
-            border: isMaster ? "2px solid rgba(255,0,0,0.18)" : "2px solid rgba(0,180,60,0.18)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-        }}>
-            <img src={img.url} alt={img.nome} style={{
+        <div
+            style={{
+                background: glassColor,
+                borderRadius: "14px",
+                padding: isMobile ? "0.5rem" : "1rem",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
+                flex: "1 1 45%",
+                maxWidth: "220px", // tamanho máximo menor do card
+                minWidth: "140px",
                 width: "100%",
-                minWidth: "187px", // 4:3 para minHeight 140px
-                minHeight: "140px",
-                aspectRatio: "4/3",
-                borderRadius: "10px",
-                maxHeight: "200px",
-                objectFit: "contain",
-                background: "#eee",
-                display: "block",
-                boxShadow: "0 1px 8px rgba(0,0,0,0.10)"
-            }} />
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "0.5rem",
+                border: isMaster ? "2px solid rgba(255,0,0,0.18)" : "2px solid rgba(0,180,60,0.18)",
+                backdropFilter: "blur(18px)",
+                WebkitBackdropFilter: "blur(18px)",
+                boxSizing: "border-box"
+            }}
+        >
+            <img
+                src={img.url}
+                alt={img.nome}
+                style={{
+                    width: "100%",
+                    aspectRatio: "16/9", // mantém proporção
+                    borderRadius: "10px",
+                    objectFit: "contain",
+                    background: "#eee",
+                    display: "block",
+                    boxShadow: "0 1px 8px rgba(0,0,0,0.10)",
+                    maxWidth: "220px", // igual ao card
+                    maxHeight: "123px", // 220px * 9 / 16 = 123.75px
+                }}
+            />
             <p style={{
                 color: "#fff",
                 margin: "0.25rem 0 0.15rem 0",
@@ -52,7 +63,7 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, o
                 fontWeight: 500,
                 letterSpacing: "0.2px"
             }} title={img.nome}>{img.nome}</p>
-            {(isAdmin || (usuario && img.owner_uid === usuario.uid)) ? (
+            {(isAdmin || (usuario && ownerUid === usuario.uid)) ? (
                 <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", width: "100%", gap: 0 }}>
                     <CustomButton
                         onClick={() => onAssociate(img._id)}

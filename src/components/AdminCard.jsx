@@ -1,21 +1,21 @@
-import React from "react";
 
-export default function AdminCard({ admin, masterEmail, isMobile, onDelete }) {
+export default function AdminCard({ admin, isMaster, isMobile, onDelete, style }) {
     return (
         <div
             key={admin.uid}
             style={{
                 display: "inline-flex",
                 alignItems: "center",
-                background: "rgba(255,255,255,0.18)",
+                background: '#ffffff88',
                 borderRadius: "12px",
                 padding: isMobile ? "0.3rem 0.8rem" : "0.4rem 1.2rem",
                 margin: "0.2rem",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
                 fontSize: isMobile ? "1em" : "1.1em",
                 wordBreak: "break-word",
-                border: admin.email === masterEmail ? "1px solid #d32f2f" : "1px solid #2ecc40",
-                maxWidth: "320px"
+                border: isMaster ? "1px solid #d32f2f" : "1px solid #2ecc40",
+                maxWidth: "320px",
+                ...style
             }}
         >
             <span style={{
