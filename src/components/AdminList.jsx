@@ -31,10 +31,3 @@ export default function AdminList({ admins, isMobile, onDelete }) {
         </div>
     );
 }
-
-// No Register.jsx
-<AdminList
-    admins={admins}
-    isMobile={isMobile}
-    onDelete={admin => { setModalOpen(true); setAdminToDelete(admin); }}
-/>

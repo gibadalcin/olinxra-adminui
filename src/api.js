@@ -59,3 +59,13 @@ export async function fetchAdmins(token) {
   if (!res.ok) throw new Error("Erro ao buscar administradores");
   return await res.json();
 }
+
+export async function fetchMarcas(adminUid, token) {
+  const res = await fetch(`${API_BASE_URL}/api/marcas?adminUid=${adminUid}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!res.ok) throw new Error("Erro ao buscar marcas");
+  return await res.json();
+}

@@ -25,6 +25,7 @@ export default function Header() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            marginTop: isMobile ? "0" : "4rem",
         }}>
             <img
                 src="/adminui.svg" // Altere para o caminho da sua logomarca

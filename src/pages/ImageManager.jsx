@@ -151,12 +151,13 @@ export default function ImageManager() {
             border: "1px solid rgba(255,255,255,0.18)",
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
-            width: "80%",
-            margin: "0 auto",
+            width: "100%",
+            height: "100%",
+            marginTop: isMobile ? "0" : "4rem",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center"
+            //justifyContent: "center"
           }}>
             <Header />
             <MainTitle isMobile={isMobile}>Gerenciamento de Imagens</MainTitle>

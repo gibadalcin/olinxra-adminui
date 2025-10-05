@@ -5,6 +5,10 @@ import ImageManager from "./pages/ImageManager";
 import Register from "./pages/Register";
 import PrivateRoute from "./components/PrivateRoute";
 import Content from "./pages/Content";
+import { auth } from "./firebaseConfig"; // importe o auth
+
+// Exponha o auth no window para uso no console do navegador
+window.auth = auth;
 
 function App() {
   return (
@@ -36,7 +40,7 @@ function App() {
           }
         />
         <Route
-          path="/conteudo"
+          path="/content"
           element={
             <PrivateRoute>
               <Content />
