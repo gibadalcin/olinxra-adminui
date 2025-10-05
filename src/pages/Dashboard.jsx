@@ -76,21 +76,46 @@ export default function Dashboard() {
                     display: showContent ? "flex" : "none",
                     alignItems: "center",
                     justifyContent: "center",
+                    flexDirection: isMobile ? "column" : "row",
                 }}>
+                    {/* Header só fica separado se não for mobile */}
+                    {!isMobile && (
+                        <div style={{
+                            background: "rgba(255,255,255,0.10)",
+                            padding: "2rem",
+                            borderRadius: "16px",
+                            boxShadow: "0 4px 32px rgba(0,0,0,0.25)",
+                            width: '100%',
+                            height: '100%',
+                            justifyContent: "center",
+                            alignItems: "center",
+                            display: "flex",
+                            flexDirection: "column",
+                            border: "1px solid rgba(255,255,255,0.18)",
+                            backdropFilter: "blur(18px)",
+                            WebkitBackdropFilter: "blur(18px)",
+                            textAlign: "center",
+                        }}>
+                            <Header />
+                        </div>
+                    )}
                     <div style={{
-                        background: "rgba(255,255,255,0.10)",
                         padding: isMobile ? "1rem" : "2rem",
                         borderRadius: "16px",
                         boxShadow: "0 4px 32px rgba(0,0,0,0.25)",
-                        width: isMobile ? "90vw" : "50%",
-                        minWidth: "260px",
-                        maxWidth: "420px",
+                        width: isMobile ? '100%' : '60%',
+                        height: '100%',
+                        justifyContent: "center",
+                        alignItems: "center",
+                        display: "flex",
+                        flexDirection: "column",
                         border: "1px solid rgba(255,255,255,0.18)",
                         backdropFilter: "blur(18px)",
                         WebkitBackdropFilter: "blur(18px)",
                         textAlign: "center",
                     }}>
-                        <Header />
+                        {/* Header aparece junto dos componentes quando mobile */}
+                        {isMobile && <Header />}
                         <MainTitle isMobile={isMobile}>Dashboard</MainTitle>
                         <UserInfo usuario={usuario} isMobile={isMobile} />
                         <DashboardActions

@@ -18,6 +18,8 @@ export default function CustomButton({ children, onClick, style = {}, ...props }
                 border: "none",
                 letterSpacing: isRound ? undefined : "0.5px",
                 textAlign: "center",
+                minWidth: "260px",
+                maxWidth: "420px",
                 ...style
             }}
             {...props}

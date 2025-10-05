@@ -31,7 +31,7 @@ export default function Header() {
                 src="/adminui.svg" // Altere para o caminho da sua logomarca
                 alt="Olinxra Logo"
                 style={{
-                    height: isMobile ? "100px" : "160px",
+                    height: isMobile ? "130px" : "160px",
                     width: "auto",
                     objectFit: "contain"
                 }}
