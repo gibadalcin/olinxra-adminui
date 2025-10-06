@@ -6,17 +6,14 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
         <form
             onSubmit={handleUpload}
             style={{
-                marginTop: 0,
-                marginRight: "auto",
-                marginBottom: isMobile ? "1rem" : "2rem",
-                marginLeft: "auto",
+                margin: "0 auto 2rem auto",
                 display: "flex",
-                flexDirection: isMobile ? "column" : "row",
-                gap: isMobile ? ".8rem" : "1rem",
+                flexDirection: "column",
+                gap: "1rem",
                 alignItems: "center",
                 justifyContent: "center",
-                width: "100%",
-                maxWidth: "500px"
+                width: isMobile ? "90%" : "90%",
+                maxWidth: "600px",
             }}>
             <input
                 type="file"
@@ -42,8 +39,8 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                     background: "#fff",
                     borderRadius: "6px",
                     padding: "0.5rem",
-                    width: isMobile ? "80%" : "auto",
                     border: "none",
+                    width: "100%",
                     fontSize: "16px"
                 }}
             />
@@ -57,7 +54,7 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                     background: "#fff",
                     borderRadius: "6px",
                     padding: "0.5rem",
-                    width: isMobile ? "80%" : "auto",
+                    width: "100%",
                     border: "none",
                     fontSize: "16px"
                 }}
@@ -65,12 +62,11 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
             <CustomButton
                 type="submit"
                 disabled={uploading || !file || !nome}
-                onClick={() => { }}
                 style={{
                     background: "#FFD700",
                     color: "#151515",
                     textShadow: "2px 2px 4px rgba(0,0,0,0.15)",
-                    width: isMobile ? "80%" : "auto",
+                    width: "100%",
                     borderStyle: "solid",
                     borderWidth: "1px",
                     borderColor: "rgba(255,255,255,0.90)",
@@ -85,7 +81,7 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                     background: "#012E57",
                     color: "#fff",
                     textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                    width: isMobile ? "80%" : "auto",
+                    width: "100%",
                     borderStyle: "solid",
                     borderWidth: "1px",
                     borderColor: "rgba(255,255,255,0.90)",

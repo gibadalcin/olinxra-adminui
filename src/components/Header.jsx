@@ -30,7 +30,7 @@ export default function Header() {
                 style={{
                     height: isMobile ? "130px" : "160px",
                     width: "auto",
-                    objectFit: "contain"
+                    objectFit: "contain",
                 }}
             />
         </header>

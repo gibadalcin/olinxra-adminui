@@ -140,27 +140,29 @@ export default function ImageManager() {
           width: "100vw",
           minHeight: "100vh",
           display: showContent ? "flex" : "none",
+          flexDirection: isMobile ? "column" : "row", // Altera direção para mobile
         }}>
+          {/* Header separado no desktop, junto no mobile */}
+          {!isMobile && (
+            <div style={{
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+              border: "1px solid rgba(255,255,255,0.18)",
+              backdropFilter: "blur(18px)",
+              WebkitBackdropFilter: "blur(18px)",
+              paddingInline: "4rem",
+              width: "20%",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}>
+              <Header />
+            </div>
+          )}
           <div style={{
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            borderRadius: "8px",
-            boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-            border: "1px solid rgba(255,255,255,0.18)",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            paddingInline: isMobile ? "1rem" : "4rem",
-            width: "20%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}>
-            <Header />
-          </div>
-          <div style={{
-            padding: isMobile ? "1rem" : "2rem",
-            borderRadius: "16px",
-            width: '100% ',
+            padding: isMobile ? "2rem 0" : "2rem",
+            width: '100%',
             height: '100%',
             justifyContent: "center",
             alignItems: "center",
@@ -171,10 +173,10 @@ export default function ImageManager() {
             WebkitBackdropFilter: "blur(18px)",
             textAlign: "center",
           }}>
+            {/* Header aparece junto dos componentes no mobile */}
+            {isMobile && <Header />}
 
             <MainTitle isMobile={isMobile}>Gerenciamento de Imagens</MainTitle>
-
-            {/* Formulário de upload modularizado */}
             <ImageUploadForm
               file={file}
               setFile={setFile}
@@ -183,10 +185,9 @@ export default function ImageManager() {
               uploading={uploading}
               handleUpload={handleUpload}
               isMobile={isMobile}
+              isWide={window.innerWidth < 1600} // NOVA PROP
               onDashboardClick={() => navigate("/dashboard")}
             />
-
-            {/* Modal de confirmação de exclusão modularizado */}
             <DeleteImageModal
               open={modalOpen}
               imgToDelete={imgToDelete}
@@ -194,7 +195,6 @@ export default function ImageManager() {
               onClose={() => { setModalOpen(false); setImgToDelete(null); }}
               onConfirm={confirmDelete}
             />
-            {/* Lista de imagens modularizada */}
             <ImageList
               imagens={imagens}
               isMobile={isMobile}
