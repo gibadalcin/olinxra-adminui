@@ -2,8 +2,11 @@ import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const getImages = async (token) => {
-  return axios.get(`${API_BASE_URL}/images`, {
+export const getImages = async (token, ownerId) => {
+  const url = ownerId
+    ? `${API_BASE_URL}/images?ownerId=${ownerId}`
+    : `${API_BASE_URL}/images`;
+  return axios.get(url, {
     headers: { Authorization: `Bearer ${token}` }
   });
 };
@@ -60,12 +63,20 @@ export async function fetchAdmins(token) {
   return await res.json();
 }
 
-export async function fetchMarcas(adminUid, token) {
-  const res = await fetch(`${API_BASE_URL}/api/marcas?adminUid=${adminUid}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+export async function fetchMarcas(ownerId, token) {
+  const url = `${API_BASE_URL}/api/marcas?ownerId=${ownerId}`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` }
   });
+  if (res.status === 404) return [];
   if (!res.ok) throw new Error("Erro ao buscar marcas");
+  return await res.json();
+}
+
+export async function fetchImagesByOwner(ownerId, token) {
+  const res = await fetch(`${API_BASE_URL}/images?ownerId=${ownerId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!res.ok) return [];
   return await res.json();
 }

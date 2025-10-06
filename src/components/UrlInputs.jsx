@@ -12,13 +12,13 @@ export default function UrlInputs({ imagens, setImagens, videos, setVideos, disa
                 variant="outlined"
                 sx={{
                     borderRadius: 2,
-                    '& .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
-                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
-                    '& .MuiInputLabel-root': { color: '#fff' },
+                    '& .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
+                    '& .MuiInputLabel-root': { color: '#fff' }, // cor visível
                     '& .MuiInputBase-input': { color: '#fff' },
                 }}
-                inputProps={{
+                slotProps={{
                     style: { color: "#fff" }
                 }}
             />
@@ -31,13 +31,13 @@ export default function UrlInputs({ imagens, setImagens, videos, setVideos, disa
                 variant="outlined"
                 sx={{
                     borderRadius: 2,
-                    '& .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
-                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
+                    '& .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
+                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
+                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff' },
                     '& .MuiInputLabel-root': { color: '#fff' },
                     '& .MuiInputBase-input': { color: '#fff' },
                 }}
-                inputProps={{
+                slotProps={{
                     style: { color: "#fff" }
                 }}
             />

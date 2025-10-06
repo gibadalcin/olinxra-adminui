@@ -35,21 +35,42 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, o
                 boxSizing: "border-box"
             }}
         >
-            <img
-                src={img.url}
-                alt={img.nome}
-                style={{
-                    width: "100%",
-                    aspectRatio: "16/9", // mantém proporção
-                    borderRadius: "10px",
-                    objectFit: "contain",
-                    background: "#eee",
-                    display: "block",
-                    boxShadow: "0 1px 8px rgba(0,0,0,0.10)",
-                    maxWidth: "220px", // igual ao card
-                    maxHeight: "123px", // 220px * 9 / 16 = 123.75px
-                }}
-            />
+            {img.url ? (
+                <img
+                    src={img.url}
+                    alt={img.nome}
+                    style={{
+                        width: "100%",
+                        aspectRatio: "16/9",
+                        borderRadius: "10px",
+                        objectFit: "contain",
+                        background: "#eee",
+                        display: "block",
+                        boxShadow: "0 1px 8px rgba(0,0,0,0.10)",
+                        maxWidth: "220px",
+                        maxHeight: "123px",
+                    }}
+                />
+            ) : (
+                <div
+                    style={{
+                        width: "100%",
+                        aspectRatio: "16/9",
+                        borderRadius: "10px",
+                        background: "#eee",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#888",
+                        fontSize: "1.1em",
+                        maxWidth: "220px",
+                        maxHeight: "123px",
+                        boxShadow: "0 1px 8px rgba(0,0,0,0.10)"
+                    }}
+                >
+                    Imagem não disponível
+                </div>
+            )}
             <p style={{
                 color: "#fff",
                 margin: "0.25rem 0 0.15rem 0",

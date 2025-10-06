@@ -30,6 +30,9 @@ export default function ImageManager() {
   // Controle de transição do conteúdo
   const [showContent, setShowContent] = useState(false);
 
+  // Controle de exibição de imagens dos demais admins (apenas para master)
+  const [showAllAdmins, setShowAllAdmins] = useState(true);
+
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 994);
     window.addEventListener("resize", handleResize);
@@ -39,6 +42,9 @@ export default function ImageManager() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUsuario(user);
+      if (user) {
+        console.log("UID do usuário logado:", user.uid);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -46,14 +52,44 @@ export default function ImageManager() {
   useEffect(() => {
     if (usuario) {
       usuario.getIdToken().then((token) => {
-        getImages(token).then((res) => {
-          setImagens(res.data);
+        const isMaster = usuario.email === import.meta.env.VITE_USER_ADMIN_EMAIL;
+        const handleResponse = (res) => {
+          let imagensArray = [];
+          if (Array.isArray(res.data)) {
+            imagensArray = res.data;
+          } else if (Array.isArray(res.data?.data)) {
+            imagensArray = res.data.data;
+          } else if (res.data && typeof res.data === 'object') {
+            const arr = Object.values(res.data).find(v => Array.isArray(v));
+            imagensArray = arr || [];
+          }
+          setImagens(imagensArray);
           setLoading(false);
-          setTimeout(() => setShowContent(true), 400); // Transição suave
-        });
+          setTimeout(() => setShowContent(true), 400);
+        };
+        if (isMaster) {
+          if (showAllAdmins) {
+            // Mostra todas as imagens
+            getImages(token).then(handleResponse).catch(() => {
+              setImagens([]);
+              setLoading(false);
+            });
+          } else {
+            // Mostra apenas as imagens do master
+            getImages(token, usuario.uid).then(handleResponse).catch(() => {
+              setImagens([]);
+              setLoading(false);
+            });
+          }
+        } else {
+          getImages(token, usuario.uid).then(handleResponse).catch(() => {
+            setImagens([]);
+            setLoading(false);
+          });
+        }
       });
     }
-  }, [usuario]);
+  }, [usuario, showAllAdmins]);
 
   const handleDelete = async (id) => {
     if (!usuario) return;
@@ -86,9 +122,24 @@ export default function ImageManager() {
       setNome("");
       setFile(null);
       setUploading(false);
-      getImages(token).then((res) => {
-        setImagens(res.data);
-      });
+      const isMaster = usuario.email === import.meta.env.VITE_USER_ADMIN_EMAIL;
+      const handleResponse = (res) => {
+        let imagensArray = [];
+        if (Array.isArray(res.data)) {
+          imagensArray = res.data;
+        } else if (Array.isArray(res.data?.data)) {
+          imagensArray = res.data.data;
+        } else if (res.data && typeof res.data === 'object') {
+          const arr = Object.values(res.data).find(v => Array.isArray(v));
+          imagensArray = arr || [];
+        }
+        setImagens(imagensArray);
+      };
+      if (isMaster) {
+        getImages(token).then(handleResponse);
+      } else {
+        getImages(token, usuario.uid).then(handleResponse);
+      }
     } catch (err) {
       alert("Erro ao enviar imagem.");
       setUploading(false);
@@ -114,8 +165,15 @@ export default function ImageManager() {
       justifyContent: "center",
       backgroundImage: "url('/login.svg')",
       backgroundPosition: "center bottom",
-      backgroundRepeat: "no-repeat"
-    }}>
+      backgroundRepeat: "no-repeat",
+      position: "relative",
+      /* Esconde a barra de scroll em navegadores modernos */
+      scrollbarWidth: "none", // Firefox
+      msOverflowStyle: "none" // IE/Edge
+    }}
+      /* Esconde a barra de scroll no Chrome, Safari e Edge */
+      className="hide-scrollbar"
+    >
 
       {/* Loader aparece junto com fundo e header */}
       {(!showContent || loading || !usuario) && (
@@ -132,6 +190,31 @@ export default function ImageManager() {
         }}>
           <Loader />
         </div>
+      )}
+
+      {/* Botão para master admin mostrar/esconder imagens dos demais admins */}
+      {usuario?.email === import.meta.env.VITE_USER_ADMIN_EMAIL && (
+        <button
+          style={{
+            position: "absolute",
+            top: 24,
+            right: 32,
+            zIndex: 10000,
+            background: showAllAdmins ? "#FFD700" : "#012E57",
+            color: showAllAdmins ? "#151515" : "#fff",
+            border: showAllAdmins ? "1px solid #fff" : "1px solid #fff",
+            borderRadius: "8px",
+            padding: "0.7rem 1.2rem",
+            fontWeight: "bold",
+            fontSize: "1rem",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+            cursor: "pointer",
+            transition: "background 0.2s, color 0.2s"
+          }}
+          onClick={() => setShowAllAdmins(v => !v)}
+        >
+          {showAllAdmins ? "Modo Master" : "Modo Admin"}
+        </button>
       )}
 
       {/* Conteúdo principal aparece suavemente */}
@@ -185,7 +268,7 @@ export default function ImageManager() {
               uploading={uploading}
               handleUpload={handleUpload}
               isMobile={isMobile}
-              isWide={window.innerWidth < 1600} // NOVA PROP
+              isWide={window.innerWidth < 1600}
               onDashboardClick={() => navigate("/dashboard")}
             />
             <DeleteImageModal
@@ -195,14 +278,31 @@ export default function ImageManager() {
               onClose={() => { setModalOpen(false); setImgToDelete(null); }}
               onConfirm={confirmDelete}
             />
-            <ImageList
-              imagens={imagens}
-              isMobile={isMobile}
-              usuario={usuario}
-              isAdmin={isAdmin}
-              onDelete={(id) => { setModalOpen(true); setImgToDelete(id); }}
-              onAssociate={(imgId) => navigate(`/content?imageId=${imgId}&adminUid=${usuario?.uid}`)}
-            />
+            {/* Container fixo para inputs/botões, lista de imagens com scroll */}
+            <div style={{
+              width: "100%",
+              flex: 1,
+              overflowY: "auto",
+              maxHeight: isMobile ? "50vh" : "60vh",
+              marginTop: "1.5rem",
+              marginBottom: "1.5rem",
+              borderRadius: "12px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+              background: "transparent",
+              scrollbarWidth: "none",
+              padding: "1rem",
+            }}
+              className="hide-scrollbar"
+            >
+              <ImageList
+                imagens={imagens}
+                isMobile={isMobile}
+                usuario={usuario}
+                isAdmin={isAdmin}
+                onDelete={(id) => { setModalOpen(true); setImgToDelete(id); }}
+                onAssociate={(imgId) => navigate(`/content?imageId=${imgId}&ownerId=${usuario?.uid}`)}
+              />
+            </div>
             <Copyright />
           </div>
         </div>

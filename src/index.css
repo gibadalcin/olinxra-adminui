@@ -1,3 +1,19 @@
+/* Força ocultação da barra de scroll em todo o app */
+body, html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+body::-webkit-scrollbar, html::-webkit-scrollbar {
+  display: none;
+}
+/* Esconde a barra de scroll em todos navegadores modernos */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

@@ -1,40 +1,8 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { useEffect, useState } from "react";
-import { fetchMarcas } from "../api";
 
-export default function BrandSelect({ marca, setMarca, disabled }) {
-    const [listaMarcas, setListaMarcas] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        async function buscarMarcas() {
-            setLoading(true);
-            try {
-                const user = window.auth?.currentUser;
-                if (!user) {
-                    setListaMarcas([]);
-                    setMarca("");
-                    return;
-                }
-                const token = await user.getIdToken();
-                const marcas = await fetchMarcas(user.uid, token);
-                setListaMarcas(marcas || []);
-                // Seleciona a primeira marca automaticamente
-                if (marcas && marcas.length > 0) {
-                    setMarca(marcas[0].nome);
-                } else {
-                    setMarca("");
-                }
-            } catch (err) {
-                setListaMarcas([]);
-                setMarca("");
-            } finally {
-                setLoading(false);
-            }
-        }
-        buscarMarcas();
-        // eslint-disable-next-line
-    }, []);
+export default function BrandSelect({ marca, setMarca, disabled, marcas, loading }) {
+    const marcasNomes = marcas.map(m => m.nome);
+    const valorSelect = marcasNomes.includes(marca) ? marca : "";
 
     return (
         <FormControl
@@ -53,15 +21,15 @@ export default function BrandSelect({ marca, setMarca, disabled }) {
                 '& .MuiInputBase-root': { color: '#fff', minHeight: "48px", height: "48px", display: "flex", alignItems: "center" },
             }}
         >
-            {listaMarcas.length === 0 && (
+            {marcas.length === 0 && (
                 <InputLabel id="marca-label" sx={{ color: "#fff" }}>Marca</InputLabel>
             )}
             <Select
                 labelId="marca-label"
-                value={marca}
-                label={listaMarcas.length === 0 ? "Marca" : ""}
+                value={valorSelect}
+                label={marcas.length === 0 ? "Marca" : ""}
                 onChange={e => setMarca(e.target.value)}
-                disabled={disabled || loading || listaMarcas.length === 0}
+                disabled={disabled || loading || marcas.length === 0}
                 sx={{
                     height: "48px",
                     borderRadius: 1,
@@ -90,10 +58,10 @@ export default function BrandSelect({ marca, setMarca, disabled }) {
             >
                 {loading ? (
                     <MenuItem disabled>Carregando...</MenuItem>
-                ) : listaMarcas.length === 0 ? (
+                ) : marcas.length === 0 ? (
                     <MenuItem disabled>Nenhuma marca cadastrada</MenuItem>
                 ) : (
-                    listaMarcas.map((m) => (
+                    marcas.map((m) => (
                         <MenuItem
                             key={m.id || m._id || m.nome}
                             value={m.nome}

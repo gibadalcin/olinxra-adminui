@@ -7,19 +7,22 @@ import Copyright from "../components/Copyright";
 import CustomButton from "../components/CustomButton";
 import CoordinatesFields from "../components/CoordinatesFields";
 import UrlInputs from "../components/URLInputs";
-import { fetchMarcas } from "../api"; // Certifique-se que existe esse método
+import { fetchMarcas, fetchImagesByOwner } from "../api"; // Certifique-se que existe esse método
 import BrandSelect from "../components/BrandSelect";
+import { IoArrowBackOutline } from "react-icons/io5";
 
-export default function Content() {
+export default function Content({ isMaster, ownerId, imageId }) {
     const [marca, setMarca] = useState("");
     const [marcas, setMarcas] = useState([]);
     const [texto, setTexto] = useState("");
-    const [imagens, setImagens] = useState("");
+    const [imagens, setImagens] = useState([]); // array de URLs
+    const [imagensInput, setImagensInput] = useState(""); // string para o input
     const [videos, setVideos] = useState("");
     const [latitude, setLatitude] = useState("");
     const [longitude, setLongitude] = useState("");
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 994);
     const [loadingMarcas, setLoadingMarcas] = useState(true);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -30,7 +33,7 @@ export default function Content() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Carregar marcas ao abrir a página
+    // Carregar marcas do dono da imagem (sempre ownerId)
     useEffect(() => {
         async function buscarMarcas() {
             setLoadingMarcas(true);
@@ -42,9 +45,9 @@ export default function Content() {
                     return;
                 }
                 const token = await user.getIdToken();
-                const lista = await fetchMarcas(user.uid, token);
+                // Sempre usa ownerId, nunca adminUid
+                const lista = ownerId ? await fetchMarcas(ownerId, token) : await fetchMarcas(user.uid, token);
                 setMarcas(lista || []);
-                // Se houver marcas, seleciona a primeira automaticamente
                 if (lista && lista.length > 0) {
                     setMarca(lista[0].nome);
                 } else {
@@ -58,7 +61,47 @@ export default function Content() {
             }
         }
         buscarMarcas();
-    }, []);
+    }, [ownerId, imageId]);
+
+    // Carregar imagens do dono da imagem (sempre ownerId)
+    useEffect(() => {
+        setImagens([]);
+        setImagensInput("");
+        async function buscarImagens() {
+            setLoading(true);
+            try {
+                const user = window.auth?.currentUser;
+                if (!user) {
+                    setImagens([]);
+                    setImagensInput("");
+                    return;
+                }
+                const token = await user.getIdToken();
+                let imagensArray = [];
+                if (isMaster && ownerId) {
+                    const imgs = await fetchImagesByOwner(ownerId, token);
+                    imagensArray = imgs.map(img => img.url);
+                } else {
+                    const imgs = await fetchImagesByOwner(user.uid, token);
+                    imagensArray = imgs.map(img => img.url);
+                }
+                setImagens(imagensArray);
+                // Monta string para o input mostrando apenas os nomes dos arquivos
+                const nomes = imagensArray.map(url => {
+                    try {
+                        const urlObj = new URL(url);
+                        return urlObj.pathname.split('/').pop();
+                    } catch {
+                        return url;
+                    }
+                });
+                setImagensInput(nomes.join(", "));
+            } finally {
+                setLoading(false);
+            }
+        }
+        buscarImagens();
+    }, [isMaster, ownerId, imageId]);
 
     const camposDesativados = !marca;
 
@@ -70,15 +113,15 @@ export default function Content() {
             body: JSON.stringify({
                 nome_marca: marca,
                 texto,
-                imagens: imagens.split(","),
-                videos: videos.split(","),
+                imagens: Array.isArray(imagens) ? imagens : [],
+                videos: videos.split(",").map(v => v.trim()).filter(Boolean),
                 latitude: parseFloat(latitude),
                 longitude: parseFloat(longitude),
             }),
         });
         alert("Conteúdo cadastrado!");
         setTexto("");
-        setImagens("");
+        setImagens([]);
         setVideos("");
         setLatitude("");
         setLongitude("");
@@ -96,8 +139,33 @@ export default function Content() {
                 backgroundPosition: "right bottom",
                 backgroundRepeat: "no-repeat",
                 overflow: "hidden",
+                position: "relative"
             }}
         >
+            {/* Ícone de voltar no canto superior esquerdo */}
+            <button
+                onClick={() => navigate("/images")}
+                style={{
+                    position: "absolute",
+                    top: 24,
+                    left: isMobile ? 8 : 32,
+                    zIndex: 10000,
+                    background: "none",
+                    border: "none",
+                    borderRadius: 0,
+                    width: "auto",
+                    height: "auto",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    boxShadow: "none",
+                    transition: "background 0.2s"
+                }}
+                title="Voltar para gerenciamento de imagens"
+            >
+                <IoArrowBackOutline size={isMobile ? 44 : 54} color="#ffffff" />
+            </button>
             <Box
                 sx={{
                     width: '100vw',
@@ -160,6 +228,8 @@ export default function Content() {
                                 marca={marca}
                                 setMarca={setMarca}
                                 disabled={loadingMarcas || marcas.length === 0}
+                                marcas={marcas}
+                                loading={loadingMarcas}
                             />
                         </div>
                     </div>
@@ -188,8 +258,12 @@ export default function Content() {
                     />
                     <div style={{ width: "100%" }}>
                         <UrlInputs
-                            imagens={imagens}
-                            setImagens={setImagens}
+                            imagens={imagensInput}
+                            setImagens={val => {
+                                // O usuário pode digitar nomes, mas para envio precisamos manter os URLs
+                                setImagensInput(val);
+                                // Não altera o array de URLs ao digitar, só ao buscar
+                            }}
                             videos={videos}
                             setVideos={setVideos}
                             disabled={camposDesativados}

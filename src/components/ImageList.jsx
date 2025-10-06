@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import ImageCard from "./ImageCard";
+import Content from "../pages/Content";
 
 export default function ImageList({ imagens, isMobile, isAdmin, usuario, onDelete, onAssociate }) {
+    const [imagemSelecionada, setImagemSelecionada] = useState(null);
+
     if (!imagens || imagens.length === 0) {
         return <p style={{ color: "#fff", fontSize: isMobile ? "1em" : "1.2em" }}>Nenhuma imagem cadastrada.</p>;
     }
+
     return (
         <div style={{
             display: "flex",
@@ -24,8 +28,16 @@ export default function ImageList({ imagens, isMobile, isAdmin, usuario, onDelet
                     usuario={usuario}
                     onDelete={onDelete}
                     onAssociate={onAssociate}
+                    onClick={() => setImagemSelecionada(img)}
                 />
             ))}
+            {imagemSelecionada && (
+                <Content
+                    isMaster={usuario.isMaster}
+                    ownerId={imagemSelecionada.owner_uid} // <-- deve ser o UID do dono da imagem!
+                    imageId={imagemSelecionada._id}
+                />
+            )}
         </div>
     );
 }

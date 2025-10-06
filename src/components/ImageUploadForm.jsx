@@ -2,9 +2,18 @@ import React from "react";
 import CustomButton from "../components/CustomButton";
 
 export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile, uploading, handleUpload, onDashboardClick }) {
+    // Função para limpar os campos após envio
+    const handleSubmit = async (e) => {
+        await handleUpload(e);
+        // Limpa os campos se o upload foi bem-sucedido
+        setFile(null);
+        setNome("");
+        // Opcional: também pode limpar o input file visualmente
+        if (e.target && e.target.reset) e.target.reset();
+    };
     return (
         <form
-            onSubmit={handleUpload}
+            onSubmit={handleSubmit}
             style={{
                 margin: "0 auto 2rem auto",
                 display: "flex",
@@ -23,15 +32,11 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                     setFile(arquivo);
                     if (arquivo) {
                         let nomeArquivo = arquivo.name;
-                        let nomeBase;
-                        if (nomeArquivo.includes("_")) {
-                            nomeBase = nomeArquivo.split("_")[0];
-                        } else if (nomeArquivo.includes("-")) {
-                            nomeBase = nomeArquivo.split("-")[0];
-                        } else {
-                            nomeBase = nomeArquivo.split(".")[0];
-                        }
-                        setNome(nomeBase);
+                        // Remove a extensão
+                        let nomeBase = nomeArquivo.replace(/\.[^/.]+$/, "");
+                        // Extrai apenas o primeiro conjunto antes de hífen, underline ou ponto
+                        let nomeSimples = nomeBase.split(/[-_.]/)[0];
+                        setNome(nomeSimples);
                     }
                 }}
                 required
