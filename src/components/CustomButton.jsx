@@ -12,14 +12,16 @@ export default function CustomButton({ children, onClick, style = {}, ...props }
                 padding: isRound ? 0 : (isMobile ? "0.5rem 1rem" : "0.75rem 2rem"),
                 borderRadius: isRound ? style.borderRadius : "6px",
                 fontWeight: isRound ? undefined : "700",
-                fontSize: isRound ? undefined : (isMobile ? "1em" : "1.1em"),
+                fontSize: isRound ? undefined : (isMobile ? ".8em" : "1em"),
                 textTransform: isRound ? undefined : "uppercase",
                 cursor: "pointer",
                 border: "none",
                 letterSpacing: isRound ? undefined : "0.5px",
                 textAlign: "center",
-                minWidth: "260px",
-                maxWidth: "420px",
+                height: '36px',
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 ...style
             }}
             {...props}

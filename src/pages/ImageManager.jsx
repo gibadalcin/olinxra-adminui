@@ -3,10 +3,10 @@ import { auth } from "../firebaseConfig";
 import { getImages, deleteImage, uploadLogo } from "../api";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import FadeIn from "../components/FadeIn";
 import Loader from "../components/Loader";
 import Copyright from "../components/Copyright";
 import MainTitle from "../components/MainTitle";
+import CustomButton from "../components/CustomButton";
 
 // Novos componentes modularizados
 import ImageUploadForm from "../components/ImageUploadForm";
@@ -156,76 +156,74 @@ export default function ImageManager() {
   const isAdmin = usuario?.email === import.meta.env.VITE_USER_ADMIN_EMAIL;
 
   return (
-    <div style={{
-      width: "100vw",
-      minHeight: "100vh",
-      overflow: "hidden",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      backgroundImage: "url('/login.svg')",
-      backgroundPosition: "center bottom",
-      backgroundRepeat: "no-repeat",
-      position: "relative",
-      /* Esconde a barra de scroll em navegadores modernos */
-      scrollbarWidth: "none", // Firefox
-      msOverflowStyle: "none" // IE/Edge
-    }}
-      /* Esconde a barra de scroll no Chrome, Safari e Edge */
-      className="hide-scrollbar"
-    >
-
-      {/* Loader aparece junto com fundo e header */}
-      {(!showContent || loading || !usuario) && (
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
+    <>
+      <div
+        style={{
           width: "100vw",
           height: "100vh",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          zIndex: 9999
-        }}>
-          <Loader />
-        </div>
-      )}
-
-      {/* Botão para master admin mostrar/esconder imagens dos demais admins */}
-      {usuario?.email === import.meta.env.VITE_USER_ADMIN_EMAIL && (
-        <button
-          style={{
+          backgroundImage: "url('/login.svg')",
+          backgroundPosition: "right 20% top 50%",
+          backgroundRepeat: "no-repeat",
+          overflow: "hidden",
+          position: "relative",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
+        className="hide-scrollbar"
+      >
+        {/* Loader aparece junto com fundo e header */}
+        {(!showContent || loading || !usuario) && (
+          <div style={{
             position: "absolute",
-            top: 24,
-            right: 32,
-            zIndex: 10000,
-            background: showAllAdmins ? "#FFD700" : "#012E57",
-            color: showAllAdmins ? "#151515" : "#fff",
-            border: showAllAdmins ? "1px solid #fff" : "1px solid #fff",
-            borderRadius: "8px",
-            padding: "0.7rem 1.2rem",
-            fontWeight: "bold",
-            fontSize: "1rem",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
-            cursor: "pointer",
-            transition: "background 0.2s, color 0.2s"
-          }}
-          onClick={() => setShowAllAdmins(v => !v)}
-        >
-          {showAllAdmins ? "Modo Master" : "Modo Admin"}
-        </button>
-      )}
-
-      {/* Conteúdo principal aparece suavemente */}
-      <FadeIn show={showContent}>
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            background: "rgba(255,255,255,0.7)",
+            transition: "background 0.2s"
+          }}>
+            <Loader />
+          </div>
+        )}
+        {/* Botão para master admin mostrar/esconder imagens dos demais admins */}
+        {usuario?.email === import.meta.env.VITE_USER_ADMIN_EMAIL && (
+          <CustomButton
+            type="button"
+            onClick={() => setShowAllAdmins(v => !v)}
+            style={{
+              position: "fixed",
+              top: 24,
+              right: 32,
+              zIndex: 10000,
+              background: showAllAdmins ? "#FFD700" : "#012E57",
+              color: showAllAdmins ? "#151515" : "#fff",
+              border: "1px solid #fff",
+              borderRadius: "8px",
+              padding: "0.7rem 1.2rem",
+              fontWeight: "bold",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+              cursor: "pointer",
+              transition: "background 0.2s, color 0.2s",
+              scrollbarWidth: "none",
+            }}
+          >
+            {showAllAdmins ? "Modo Master" : "Modo Admin"}
+          </CustomButton>
+        )}
+        {/* Conteúdo principal aparece imediatamente, sem FadeIn para priorizar LCP */}
         <div style={{
           width: "100vw",
           minHeight: "100vh",
           display: showContent ? "flex" : "none",
-          flexDirection: isMobile ? "column" : "row", // Altera direção para mobile
+          flexDirection: isMobile ? "column" : "row",
         }}>
-          {/* Header separado no desktop, junto no mobile */}
           {!isMobile && (
             <div style={{
               backgroundColor: "rgba(255, 255, 255, 0.1)",
@@ -233,9 +231,6 @@ export default function ImageManager() {
               border: "1px solid rgba(255,255,255,0.18)",
               backdropFilter: "blur(18px)",
               WebkitBackdropFilter: "blur(18px)",
-              paddingInline: "4rem",
-              width: "20%",
-              height: "100%",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
@@ -246,7 +241,7 @@ export default function ImageManager() {
           <div style={{
             padding: isMobile ? "2rem 0" : "2rem",
             width: '100%',
-            height: '100%',
+            height: '100vh',
             justifyContent: "center",
             alignItems: "center",
             display: "flex",
@@ -255,10 +250,9 @@ export default function ImageManager() {
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
             textAlign: "center",
+            paddingTop: isMobile ? 0 : 100,
           }}>
-            {/* Header aparece junto dos componentes no mobile */}
             {isMobile && <Header />}
-
             <MainTitle isMobile={isMobile}>Gerenciamento de Imagens</MainTitle>
             <ImageUploadForm
               file={file}
@@ -278,12 +272,11 @@ export default function ImageManager() {
               onClose={() => { setModalOpen(false); setImgToDelete(null); }}
               onConfirm={confirmDelete}
             />
-            {/* Container fixo para inputs/botões, lista de imagens com scroll */}
             <div style={{
               width: "100%",
               flex: 1,
               overflowY: "auto",
-              maxHeight: isMobile ? "50vh" : "60vh",
+              maxHeight: isMobile ? "100vh" : "100vh",
               marginTop: "1.5rem",
               marginBottom: "1.5rem",
               borderRadius: "12px",
@@ -291,6 +284,7 @@ export default function ImageManager() {
               background: "transparent",
               scrollbarWidth: "none",
               padding: "1rem",
+
             }}
               className="hide-scrollbar"
             >
@@ -306,7 +300,36 @@ export default function ImageManager() {
             <Copyright />
           </div>
         </div>
-      </FadeIn>
-    </div>
+      </div>
+      <div style={{
+        position: "fixed",
+        right: "32px",
+        bottom: "32px",
+        zIndex: 10001,
+        boxShadow: "0 4px 16px rgba(1,46,87,0.18)",
+        borderRadius: "12px"
+      }}>
+        <CustomButton
+          type="button"
+          onClick={() => navigate('/dashboard')}
+          style={{
+            background: "#012E57",
+            color: "#fff",
+            textShadow: "0 1px 4px rgba(0,0,0,0.15)",
+            minWidth: "120px",
+            padding: "0.8rem 1.6rem",
+            borderStyle: "solid",
+            borderWidth: "1px",
+            borderColor: "rgba(255,255,255,0.90)",
+            fontWeight: "bold",
+            fontSize: "1.08em",
+            borderRadius: "12px",
+            cursor: "pointer"
+          }}
+        >
+          Dashboard
+        </CustomButton>
+      </div>
+    </>
   );
 }

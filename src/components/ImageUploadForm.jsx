@@ -21,7 +21,7 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                 gap: "1rem",
                 alignItems: "center",
                 justifyContent: "center",
-                width: isMobile ? "90%" : "90%",
+                width: isMobile ? 220 : 290,
                 maxWidth: "600px",
             }}>
             <input
@@ -46,7 +46,7 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                     padding: "0.5rem",
                     border: "none",
                     width: "100%",
-                    fontSize: "16px"
+                    fontSize: "16px",
                 }}
             />
             <input
@@ -78,21 +78,6 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                 }}
             >
                 {uploading ? "Enviando..." : "Enviar"}
-            </CustomButton>
-            <CustomButton
-                type="button"
-                onClick={onDashboardClick}
-                style={{
-                    background: "#012E57",
-                    color: "#fff",
-                    textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                    width: "100%",
-                    borderStyle: "solid",
-                    borderWidth: "1px",
-                    borderColor: "rgba(255,255,255,0.90)",
-                }}
-            >
-                Dashboard
             </CustomButton>
         </form>
     );

@@ -9,10 +9,10 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, o
     // Se ownerUid vier vazio, isMaster será false
     const isMaster = Boolean(useIsMasterAdmin({ uid: ownerUid }));
 
-    // Glass color: vermelho para master, verde para outros admins
+    // Glass color: vermelho para master, azul para outros admins
     const glassColor = isMaster
         ? "rgba(255, 0, 0, 0.12)" // leve vermelho
-        : "rgba(0, 180, 60, 0.12)"; // leve verde
+        : "rgba(1, 46, 87, 0.12)"; // azul contexto olinxra
 
     return (
         <div
@@ -35,6 +35,44 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, o
                 boxSizing: "border-box"
             }}
         >
+            <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                margin: "0.25rem 0 0.15rem 0"
+            }}>
+                <span style={{
+                    color: "#fff",
+                    fontSize: isMobile ? "1em" : "1.08em",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    wordBreak: "break-word",
+                    textAlign: "left",
+                    fontWeight: 500,
+                    letterSpacing: "0.2px",
+                    flex: 1,
+                    justifyContent: "left",
+                }} title={img.nome}>{img.nome}</span>
+                {(isAdmin || (usuario && ownerUid === usuario.uid)) && (
+                    <button
+                        onClick={() => onDelete(img._id)}
+                        style={{
+                            background: "transparent",
+                            border: "none",
+                            padding: 0,
+                            marginLeft: "8px",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center"
+                        }}
+                        aria-label="Excluir"
+                    >
+                        <FiX size={20} color="#fff" />
+                    </button>
+                )}
+            </div>
             {img.url ? (
                 <img
                     src={img.url}
@@ -42,7 +80,7 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, o
                     style={{
                         width: "100%",
                         aspectRatio: "16/9",
-                        borderRadius: "10px",
+                        borderRadius: "2px",
                         objectFit: "contain",
                         background: "#eee",
                         display: "block",
@@ -71,19 +109,7 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, o
                     Imagem não disponível
                 </div>
             )}
-            <p style={{
-                color: "#fff",
-                margin: "0.25rem 0 0.15rem 0",
-                fontSize: isMobile ? "1em" : "1.08em",
-                width: "100%",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                wordBreak: "break-word",
-                textAlign: "center",
-                fontWeight: 500,
-                letterSpacing: "0.2px"
-            }} title={img.nome}>{img.nome}</p>
+            {/* Nome e botão de exclusão já renderizados acima */}
             {(isAdmin || (usuario && ownerUid === usuario.uid)) ? (
                 <div style={{
                     display: "flex",
@@ -99,42 +125,25 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, o
                         style={{
                             background: "linear-gradient(90deg, #00e913ff 0%, #04aa20ff 100%)",
                             textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                            width: "50%",
+                            width: "100%",
                             minWidth: 0,
-                            maxWidth: "110px", // metade do card
+                            maxWidth: "220px",
                             height: "24px",
-                            borderRadius: "8px 0 0 8px",
+                            borderRadius: "2px",
                             transition: "box-shadow 0.2s",
                             marginRight: "2px",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            boxSizing: "border-box"
+                            boxSizing: "border-box",
+                            color: "#fff",
+                            fontWeight: "700",
+                            fontSize: "0.9em",
+                            letterSpacing: "0.5px",
                         }}
                         aria-label="Associar Conteúdo"
                     >
-                        <FiPlus size={16} color="#fff" />
-                    </CustomButton>
-                    <CustomButton
-                        onClick={() => onDelete(img._id)}
-                        style={{
-                            background: "linear-gradient(90deg, #d32f2f 0%, #ff6f60 100%)",
-                            textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                            width: "50%",
-                            minWidth: 0,
-                            maxWidth: "110px", // metade do card
-                            height: "24px",
-                            borderRadius: "0 8px 8px 0",
-                            transition: "box-shadow 0.2s",
-                            marginLeft: "2px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            boxSizing: "border-box"
-                        }}
-                        aria-label="Excluir"
-                    >
-                        <FiX size={16} color="#fff" />
+                        Conteúdo
                     </CustomButton>
                 </div>
             ) : null}

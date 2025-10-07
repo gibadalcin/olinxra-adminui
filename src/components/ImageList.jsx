@@ -17,7 +17,7 @@ export default function ImageList({ imagens, isMobile, isAdmin, usuario, onDelet
             justifyContent: isMobile ? "center" : "left",
             width: "100%",
             maxWidth: "98%",
-            margin: "0 auto"
+            margin: "0 auto",
         }}>
             {imagens.map(img => (
                 <ImageCard

@@ -18,11 +18,13 @@ export default function Header() {
 
     return (
         <header style={{
-            width: "100%",
-            maxWidth: "600px",
+            width: isMobile ? "100%" : "auto",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            marginTop: "8rem",
+            marginBottom: "2rem",
+            marginInline: "4rem",
         }}>
             <img
                 src="/adminui.svg" // Altere para o caminho da sua logomarca

@@ -7,7 +7,7 @@ export default function DeleteImageModal({ open, imgToDelete, imagens, onConfirm
     return (
         <div style={{
             position: "fixed",
-            width: "100vw", height: "100vh",
+            width: "100%", height: "100%",
             background: "rgba(0,0,0,0.45)",
             display: "flex", alignItems: "center", justifyContent: "center",
             zIndex: 9999
