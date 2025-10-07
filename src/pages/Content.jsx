@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { TextField, Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { TextField, Box } from "@mui/material";
 import Header from "../components/Header";
 import MainTitle from "../components/MainTitle";
 import Copyright from "../components/Copyright";
 import CustomButton from "../components/CustomButton";
 import CoordinatesFields from "../components/CoordinatesFields";
 import UrlInputs from "../components/URLInputs";
-import { fetchMarcas, fetchImagesByOwner } from "../api"; // Certifique-se que existe esse método
+import { fetchMarcas, fetchImagesByOwner } from "../api";
 import BrandSelect from "../components/BrandSelect";
 import { IoArrowBackOutline } from "react-icons/io5";
 
@@ -15,8 +15,8 @@ export default function Content({ isMaster, ownerId, imageId }) {
     const [marca, setMarca] = useState("");
     const [marcas, setMarcas] = useState([]);
     const [texto, setTexto] = useState("");
-    const [imagens, setImagens] = useState([]); // array de URLs
-    const [imagensInput, setImagensInput] = useState(""); // string para o input
+    const [imagens, setImagens] = useState([]);
+    const [imagensInput, setImagensInput] = useState("");
     const [videos, setVideos] = useState("");
     const [latitude, setLatitude] = useState("");
     const [longitude, setLongitude] = useState("");
@@ -33,7 +33,6 @@ export default function Content({ isMaster, ownerId, imageId }) {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Carregar marcas do dono da imagem (sempre ownerId)
     useEffect(() => {
         async function buscarMarcas() {
             setLoadingMarcas(true);
@@ -45,7 +44,6 @@ export default function Content({ isMaster, ownerId, imageId }) {
                     return;
                 }
                 const token = await user.getIdToken();
-                // Sempre usa ownerId, nunca adminUid
                 const lista = ownerId ? await fetchMarcas(ownerId, token) : await fetchMarcas(user.uid, token);
                 setMarcas(lista || []);
                 if (lista && lista.length > 0) {
@@ -63,7 +61,6 @@ export default function Content({ isMaster, ownerId, imageId }) {
         buscarMarcas();
     }, [ownerId, imageId]);
 
-    // Carregar imagens do dono da imagem (sempre ownerId)
     useEffect(() => {
         setImagens([]);
         setImagensInput("");
@@ -86,7 +83,6 @@ export default function Content({ isMaster, ownerId, imageId }) {
                     imagensArray = imgs.map(img => img.url);
                 }
                 setImagens(imagensArray);
-                // Monta string para o input mostrando apenas os nomes dos arquivos
                 const nomes = imagensArray.map(url => {
                     try {
                         const urlObj = new URL(url);
@@ -130,19 +126,21 @@ export default function Content({ isMaster, ownerId, imageId }) {
     return (
         <div
             style={{
+                minHeight: "100vh",
                 width: "100vw",
-                height: "100vh",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
                 backgroundImage: "url('/login.svg')",
                 backgroundPosition: "right bottom",
                 backgroundRepeat: "no-repeat",
+                backgroundAttachment: "fixed",
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
                 overflow: "hidden",
-                position: "relative"
             }}
         >
-            {/* Ícone de voltar no canto superior esquerdo */}
+            {/* Ícone de voltar */}
             <button
                 onClick={() => navigate("/images")}
                 style={{
@@ -169,7 +167,7 @@ export default function Content({ isMaster, ownerId, imageId }) {
             <Box
                 sx={{
                     width: '100vw',
-                    height: "100vh",
+                    flex: 1,
                     backgroundColor: "rgba(255,255,255,0.08)",
                     borderRadius: "12px",
                     boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
@@ -186,7 +184,7 @@ export default function Content({ isMaster, ownerId, imageId }) {
                     "&::-webkit-scrollbar": {
                         display: "none",
                     },
-                    paddingTop: isMobile ? "1rem" : "4rem",
+                    paddingBottom: "120px", // espaço para o rodapé
                 }}
             >
                 <Header />
@@ -260,9 +258,7 @@ export default function Content({ isMaster, ownerId, imageId }) {
                         <UrlInputs
                             imagens={imagensInput}
                             setImagens={val => {
-                                // O usuário pode digitar nomes, mas para envio precisamos manter os URLs
                                 setImagensInput(val);
-                                // Não altera o array de URLs ao digitar, só ao buscar
                             }}
                             videos={videos}
                             setVideos={setVideos}
@@ -312,14 +308,13 @@ export default function Content({ isMaster, ownerId, imageId }) {
                         </CustomButton>
                     </div>
                 </form>
-                {/* Mensagem só aparece se realmente não houver marcas cadastradas */}
                 {!loadingMarcas && marcas.length === 0 && (
                     <p style={{ marginTop: 16 }}>
                         Nenhuma marca cadastrada. Cadastre uma marca para liberar o formulário.
                     </p>
                 )}
-                <Copyright />
             </Box>
+            <Copyright />
         </div>
     );
 }
