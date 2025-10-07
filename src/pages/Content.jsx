@@ -10,6 +10,7 @@ import UrlInputs from "../components/URLInputs";
 import { fetchMarcas, fetchImagesByOwner } from "../api";
 import BrandSelect from "../components/BrandSelect";
 import { IoArrowBackOutline } from "react-icons/io5";
+import LocationPicker from "../components/LocationPicker";
 
 export default function Content({ isMaster, ownerId, imageId }) {
     const [marca, setMarca] = useState("");
@@ -212,13 +213,11 @@ export default function Content({ isMaster, ownerId, imageId }) {
                         }}
                     >
                         <div style={{ flex: 1 }}>
-                            <CoordinatesFields
+                            <LocationPicker
                                 latitude={latitude}
-                                setLatitude={setLatitude}
                                 longitude={longitude}
+                                setLatitude={setLatitude}
                                 setLongitude={setLongitude}
-                                disabled={camposDesativados}
-                                isMobile={isMobile}
                             />
                         </div>
                         <div style={{ flex: 1 }}>
