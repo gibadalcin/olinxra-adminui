@@ -68,7 +68,7 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                 type="submit"
                 disabled={uploading || !file || !nome}
                 style={{
-                    background: "#FFD700",
+                    background: "#4cd964",
                     color: "#151515",
                     textShadow: "2px 2px 4px rgba(0,0,0,0.15)",
                     width: isMobile ? "80vw" : "100%",

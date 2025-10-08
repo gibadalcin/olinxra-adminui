@@ -23,6 +23,7 @@ export default function Register() {
     const [formDirection, setFormDirection] = useState(window.innerWidth < 1420 ? "column" : "row");
     const navigate = useNavigate();
     const [token, setToken] = useState(null);
+    const [adminsLoaded, setAdminsLoaded] = useState(false);
 
     useEffect(() => {
         async function fetchToken() {
@@ -43,6 +44,7 @@ export default function Register() {
                 const usuario = getAuth().currentUser;
                 if (!usuario) {
                     setErro("Usuário não autenticado.");
+                    setAdminsLoaded(true);
                     return;
                 }
                 const idToken = await usuario.getIdToken();
@@ -51,6 +53,8 @@ export default function Register() {
             } catch (err) {
                 setErro("Erro ao buscar administradores: " + (err?.message || err));
                 console.error("Erro ao buscar admins:", err);
+            } finally {
+                setAdminsLoaded(true);
             }
         }
         if (token) {
@@ -152,7 +156,7 @@ export default function Register() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            backgroundImage: "url('/login.svg')",
+            background: '#012E57',
             backgroundPosition: "right 24% bottom 40%",
             backgroundRepeat: "no-repeat",
         }}>
@@ -206,7 +210,6 @@ export default function Register() {
                             sucesso={sucesso}
                             navigate={navigate}
                             formStyle={{
-
                                 flexDirection: formDirection,
                                 flexWrap: "wrap",
                                 gap: "1rem",
@@ -215,35 +218,41 @@ export default function Register() {
                                 alignItems: "center",
                             }}
                         />
-                        {/* Lista de administradores */}
-                        <div
-                            style={{
-                                background: "transparent",
-                                padding: isMobile ? "0.5rem" : "1.5rem",
-                                borderRadius: "8px",
-                                width: "94%",
-                                textAlign: "center",
-                                margin: isMobile ? "16px auto" : "24px auto",
-                                maxHeight: isMobile ? "260px" : "340px",
-                                overflowY: "auto",
-                                scrollbarWidth: "thin",
-                                scrollbarColor: "#cccccc #0000"
-                            }}
-                            className="admin-list-scroll"
-                        >
-                            <h2 style={{ color: "#fff", fontSize: isMobile ? "1.2em" : "1.4em", marginBottom: "1rem" }}>Administradores</h2>
-                            <AdminList
-                                admins={admins}
-                                isMobile={isMobile}
-                                onDelete={admin => { setModalOpen(true); setAdminToDelete(admin); }}
-                            />
-                        </div>
-                        <DeleteAdminModal
-                            open={modalOpen}
-                            adminToDelete={adminToDelete}
-                            onConfirm={handleDeleteAdmin}
-                            onCancel={() => { setModalOpen(false); setAdminToDelete(null); }}
-                        />
+                        {/* Renderiza lista e modal só após carregar admins */}
+                        {adminsLoaded ? (
+                            <>
+                                <div
+                                    style={{
+                                        background: "transparent",
+                                        padding: isMobile ? "0.5rem" : "1.5rem",
+                                        borderRadius: "8px",
+                                        width: "94%",
+                                        textAlign: "center",
+                                        margin: isMobile ? "16px auto" : "24px auto",
+                                        maxHeight: isMobile ? "260px" : "340px",
+                                        overflowY: "auto",
+                                        scrollbarWidth: "thin",
+                                        scrollbarColor: "#cccccc #0000"
+                                    }}
+                                    className="admin-list-scroll"
+                                >
+                                    <h2 style={{ color: "#fff", fontSize: isMobile ? "1.2em" : "1.4em", marginBottom: "1rem" }}>Administradores</h2>
+                                    <AdminList
+                                        admins={admins}
+                                        isMobile={isMobile}
+                                        onDelete={admin => { setModalOpen(true); setAdminToDelete(admin); }}
+                                    />
+                                </div>
+                                <DeleteAdminModal
+                                    open={modalOpen}
+                                    adminToDelete={adminToDelete}
+                                    onConfirm={handleDeleteAdmin}
+                                    onCancel={() => { setModalOpen(false); setAdminToDelete(null); }}
+                                />
+                            </>
+                        ) : (
+                            <div style={{ color: "#fff", marginTop: "2rem" }}>Carregando administradores...</div>
+                        )}
                         <Copyright />
                     </div>
                 </div>

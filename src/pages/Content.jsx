@@ -10,6 +10,7 @@ import { fetchMarcas, fetchImagesByOwner } from "../api";
 import BrandSelect from "../components/BrandSelect";
 import { IoArrowBackOutline } from "react-icons/io5";
 import LocationPicker from "../components/LocationPicker";
+import FadeIn from "../components/FadeIn";
 
 export default function Content({ isMaster, ownerId, imageId }) {
     const [width, setWidth] = useState(768);
@@ -24,6 +25,7 @@ export default function Content({ isMaster, ownerId, imageId }) {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= width);
     const [loadingMarcas, setLoadingMarcas] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [showContent, setShowContent] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -100,6 +102,10 @@ export default function Content({ isMaster, ownerId, imageId }) {
         buscarImagens();
     }, [isMaster, ownerId, imageId]);
 
+    useEffect(() => {
+        setTimeout(() => setShowContent(true), 400);
+    }, []);
+
     const camposDesativados = !marca;
 
     const handleSubmit = async (e) => {
@@ -129,10 +135,7 @@ export default function Content({ isMaster, ownerId, imageId }) {
             style={{
                 minHeight: "100vh",
                 width: "100vw",
-                backgroundImage: "url('/login.svg')",
-                backgroundPosition: "right 0% bottom 30%",
-                backgroundRepeat: "no-repeat",
-                backgroundAttachment: "fixed",
+                backgroundColor: "#012E57",
                 position: "relative",
                 display: "flex",
                 flexDirection: "column",
@@ -165,155 +168,151 @@ export default function Content({ isMaster, ownerId, imageId }) {
             >
                 <IoArrowBackOutline size={isMobile ? 38 : 44} color="#ffffff" />
             </button>
-            <Box
-                sx={{
-                    width: '100vw',
-                    paddingTop: "4rem",
-                    flex: 1,
-                    backgroundColor: "rgba(255,255,255,0.08)",
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
-                    border: "1px solid rgba(255,255,255,0.25)",
-                    backdropFilter: "blur(18px)",
-                    WebkitBackdropFilter: "blur(18px)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                    color: "#fff",
-                    overflowY: "auto",
-                    scrollbarWidth: "none",
-                    "&::-webkit-scrollbar": {
-                        display: "none",
-                    },
-                }}
-            >
-                <Header />
-                <MainTitle isMobile={isMobile}>Cadastrar Conteúdo</MainTitle>
-                <form
-                    onSubmit={handleSubmit}
+            {/* Botões fixos no canto superior direito */}
+            <div style={{
+                position: "fixed",
+                top: 24,
+                right: 32,
+                zIndex: 10001,
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px"
+            }}>
+                <CustomButton
+                    type="button"
+                    onClick={() => navigate("/dashboard")}
                     style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: isMobile ? ".8rem" : "1.5rem",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: "100%",
-                        maxWidth: isMobile ? "96vw" : "900px",
-                        padding: "20px"
+                        background: "#012E57",
+                        color: "#fff",
+                        textShadow: "0 1px 4px rgba(255,255,255,0.15)",
+                        border: "1px solid rgba(255,255,255,0.90)",
                     }}
                 >
-                    <div
+                    Dashboard
+                </CustomButton>
+                <CustomButton
+                    type="submit"
+                    onClick={handleSubmit}
+                    disabled={camposDesativados}
+                    style={{
+                        background: "#4cd964",
+                        color: "#151515",
+                        textShadow: "2px 2px 4px rgba(0,0,0,0.15)",
+                        border: "1px solid rgba(255,255,255,0.90)",
+                    }}>
+                    Salvar
+                </CustomButton>
+            </div>
+            <FadeIn show={showContent}>
+                <Box
+                    sx={{
+                        width: '100vw',
+                        paddingTop: "4rem",
+                        flex: 1,
+                        backgroundColor: "rgba(255,255,255,0.08)",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+                        border: "1px solid rgba(255,255,255,0.25)",
+                        backdropFilter: "blur(18px)",
+                        WebkitBackdropFilter: "blur(18px)",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        color: "#fff",
+                        overflowY: "auto",
+                        scrollbarWidth: "none",
+                        "&::-webkit-scrollbar": {
+                            display: "none",
+                        },
+                    }}
+                >
+                    <Header />
+                    <MainTitle isMobile={isMobile}>Cadastrar Conteúdo</MainTitle>
+                    {/* Remova os botões do formulário */}
+                    <form
+                        onSubmit={handleSubmit}
                         style={{
                             display: "flex",
-                            flexDirection: isMobile ? "column" : "row",
-                            gap: isMobile ? "1rem" : "2rem",
-                            width: "100%",
-                            marginBottom: isMobile ? "0.8rem" : "1.5rem",
-                        }}
-                    >
-                        <div style={{ flex: 1 }}>
-                            <LocationPicker
-                                latitude={latitude}
-                                longitude={longitude}
-                                setLatitude={setLatitude}
-                                setLongitude={setLongitude}
-                            />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <BrandSelect
-                                marca={marca}
-                                setMarca={setMarca}
-                                disabled={loadingMarcas || marcas.length === 0}
-                                marcas={marcas}
-                                loading={loadingMarcas}
-                            />
-                        </div>
-                    </div>
-                    <TextField
-                        label="Texto"
-                        value={texto}
-                        onChange={e => setTexto(e.target.value)}
-                        multiline
-                        rows={4}
-                        fullWidth
-                        disabled={camposDesativados}
-                        sx={{
-                            borderRadius: 2,
-                            color: "#fff",
-                            minHeight: "48px",
-                            '& .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
-                            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
-                            '& .MuiInputLabel-root': { color: '#fff' },
-                            '& .MuiInputBase-input': { color: '#fff', minHeight: "48px", display: "flex", alignItems: "center" },
-                        }}
-                        slotProps={{
-                            input: { style: { color: "#fff", minHeight: "48px", display: "flex", alignItems: "center" } }
-                        }}
-                        style={{ marginTop: 16, width: "100%" }}
-                    />
-                    <div style={{ width: "100%" }}>
-                        <UrlInputs
-                            imagens={imagensInput}
-                            setImagens={val => {
-                                setImagensInput(val);
-                            }}
-                            videos={videos}
-                            setVideos={setVideos}
-                            disabled={camposDesativados}
-                        />
-                    </div>
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: isMobile ? "column" : "row",
+                            flexDirection: "column",
                             gap: isMobile ? ".8rem" : "1.5rem",
-                            width: "100%",
-                            marginTop: 24,
+                            alignItems: "center",
                             justifyContent: "center",
-                            alignItems: "center"
+                            width: "100%",
+                            maxWidth: isMobile ? "96vw" : "900px",
+                            padding: "20px"
                         }}
                     >
-                        <CustomButton
-                            type="submit"
-                            onClick={() => { }}
-                            disabled={camposDesativados}
+                        <div
                             style={{
-                                background: "#FFD700",
-                                color: "#151515",
-                                textShadow: "2px 2px 4px rgba(0,0,0,0.15)",
-                                width: isMobile ? "90vw" : "300px",
-                                borderStyle: "solid",
-                                borderWidth: "1px",
-                                borderColor: "rgba(255,255,255,0.90)",
-                            }}>
-                            Salvar Conteúdo
-                        </CustomButton>
-                        <CustomButton
-                            type="button"
-                            onClick={() => navigate("/dashboard")}
-                            style={{
-                                background: "#012E57",
-                                color: "#fff",
-                                textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                                width: isMobile ? "90vw" : "300px",
-                                borderStyle: "solid",
-                                borderWidth: "1px",
-                                borderColor: "rgba(255,255,255,0.90)",
+                                display: "flex",
+                                flexDirection: isMobile ? "column" : "row",
+                                gap: isMobile ? "1rem" : "2rem",
+                                width: "100%",
+                                marginBottom: isMobile ? "0.8rem" : "1.5rem",
                             }}
                         >
-                            Dashboard
-                        </CustomButton>
-                    </div>
-                    <Copyright />
-                </form>
-                {!loadingMarcas && marcas.length === 0 && (
-                    <p style={{ marginTop: 16 }}>
-                        Nenhuma marca cadastrada. Cadastre uma marca para liberar o formulário.
-                    </p>
-                )}
-            </Box>
+                            <div style={{ flex: 1 }}>
+                                <LocationPicker
+                                    latitude={latitude}
+                                    longitude={longitude}
+                                    setLatitude={setLatitude}
+                                    setLongitude={setLongitude}
+                                />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <BrandSelect
+                                    marca={marca}
+                                    setMarca={setMarca}
+                                    disabled={loadingMarcas || marcas.length === 0}
+                                    marcas={marcas}
+                                    loading={loadingMarcas}
+                                />
+                            </div>
+                        </div>
+                        <TextField
+                            label="Texto"
+                            value={texto}
+                            onChange={e => setTexto(e.target.value)}
+                            multiline
+                            rows={4}
+                            fullWidth
+                            disabled={camposDesativados}
+                            sx={{
+                                borderRadius: 2,
+                                color: "#fff",
+                                minHeight: "48px",
+                                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
+                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#fff !important' },
+                                '& .MuiInputLabel-root': { color: '#fff' },
+                                '& .MuiInputBase-input': { color: '#fff', minHeight: "48px", display: "flex", alignItems: "center" },
+                            }}
+                            slotProps={{
+                                input: { style: { color: "#fff", minHeight: "48px", display: "flex", alignItems: "center" } }
+                            }}
+                            style={{ marginTop: 16, width: "100%" }}
+                        />
+                        <div style={{ width: "100%" }}>
+                            <UrlInputs
+                                imagens={imagensInput}
+                                setImagens={val => {
+                                    setImagensInput(val);
+                                }}
+                                videos={videos}
+                                setVideos={setVideos}
+                                disabled={camposDesativados}
+                            />
+                        </div>
+                        <Copyright />
+                    </form>
+                    {!loadingMarcas && marcas.length === 0 && (
+                        <p style={{ marginTop: 16 }}>
+                            Nenhuma marca cadastrada. Cadastre uma marca para liberar o formulário.
+                        </p>
+                    )}
+                </Box>
+            </FadeIn>
         </div>
     );
 }

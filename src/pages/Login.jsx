@@ -49,7 +49,7 @@ export default function Login() {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundImage: "url('/login.svg')",
+                background: "#012E57",
                 backgroundSize: "cover",
                 backgroundPosition: "center top",
                 backgroundRepeat: "no-repeat",
@@ -73,8 +73,6 @@ export default function Login() {
                             style={{
                                 background: "rgba(255,255,255,0.10)",
                                 padding: "2rem",
-                                borderRadius: "16px",
-                                boxShadow: "0 4px 32px rgba(0,0,0,0.25)",
                                 width: "100%",
                                 height: "100%",
                                 justifyContent: "center",

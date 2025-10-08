@@ -45,7 +45,7 @@ export default function Dashboard() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            backgroundImage: "url('/login.svg')",
+            background: "#012E57",
             backgroundSize: "cover",
             backgroundPosition: "center top",
             backgroundRepeat: "no-repeat",

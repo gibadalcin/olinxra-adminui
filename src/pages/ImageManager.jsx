@@ -7,6 +7,7 @@ import Loader from "../components/Loader";
 import Copyright from "../components/Copyright";
 import MainTitle from "../components/MainTitle";
 import CustomButton from "../components/CustomButton";
+import FadeIn from "../components/FadeIn";
 
 // Novos componentes modularizados
 import ImageUploadForm from "../components/ImageUploadForm";
@@ -22,19 +23,19 @@ export default function ImageManager() {
   const [uploading, setUploading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [imgToDelete, setImgToDelete] = useState(null);
+  const [showAllAdmins, setShowAllAdmins] = useState(true);
   const navigate = useNavigate();
+  const width = 994;
 
   // Responsividade dinâmica
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 994);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= width);
 
   // Controle de transição do conteúdo
   const [showContent, setShowContent] = useState(false);
-
-  // Controle de exibição de imagens dos demais admins (apenas para master)
-  const [showAllAdmins, setShowAllAdmins] = useState(true);
+  const [imagensLoaded, setImagensLoaded] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 994);
+    const handleResize = () => setIsMobile(window.innerWidth <= width);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -65,7 +66,7 @@ export default function ImageManager() {
           }
           setImagens(imagensArray);
           setLoading(false);
-          setTimeout(() => setShowContent(true), 400);
+          setImagensLoaded(true);
         };
         if (isMaster) {
           if (showAllAdmins) {
@@ -73,23 +74,30 @@ export default function ImageManager() {
             getImages(token).then(handleResponse).catch(() => {
               setImagens([]);
               setLoading(false);
+              setImagensLoaded(true);
             });
           } else {
             // Mostra apenas as imagens do master
             getImages(token, usuario.uid).then(handleResponse).catch(() => {
               setImagens([]);
               setLoading(false);
+              setImagensLoaded(true);
             });
           }
         } else {
           getImages(token, usuario.uid).then(handleResponse).catch(() => {
             setImagens([]);
             setLoading(false);
+            setImagensLoaded(true);
           });
         }
       });
     }
   }, [usuario, showAllAdmins]);
+
+  useEffect(() => {
+    setTimeout(() => setShowContent(true), 400);
+  }, []);
 
   const handleDelete = async (id) => {
     if (!usuario) return;
@@ -156,68 +164,74 @@ export default function ImageManager() {
   const isAdmin = usuario?.email === import.meta.env.VITE_USER_ADMIN_EMAIL;
 
   return (
-    <>
-      <div
-        style={{
+    <div
+      style={{
+        width: "100vw",
+        minHeight: "100vh",
+        background: "#012E57",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        position: "relative",
+      }}
+      className="hide-scrollbar"
+    >
+      {(!showContent || loading || !usuario) && (
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
           width: "100vw",
-          height: "100%",
+          height: "100vh",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundImage: "url('/login.svg')",
-          backgroundPosition: "right 20% top 50%",
-          backgroundRepeat: "no-repeat",
-          overflow: "hidden",
-          position: "relative",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
-        className="hide-scrollbar"
-      >
-        {/* Loader aparece junto com fundo e header */}
-        {(!showContent || loading || !usuario) && (
-          <div style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-            background: "rgba(255,255,255,0.7)",
-            transition: "background 0.2s"
-          }}>
-            <Loader />
-          </div>
-        )}
-        {/* Botão para master admin mostrar/esconder imagens dos demais admins */}
-        {usuario?.email === import.meta.env.VITE_USER_ADMIN_EMAIL && (
+          zIndex: 9999,
+          background: "#012E57",
+        }}>
+          <Loader />
+        </div>
+      )}
+      {/* Botão de alternância de modo para o usuário master */}
+      {usuario?.email === import.meta.env.VITE_USER_ADMIN_EMAIL && (
+        <div style={{
+          position: "fixed",
+          top: 24,
+          right: 32,
+          zIndex: 10000,
+          display: "flex",
+          flexDirection: "column",
+          gap: "12px"
+        }}>
+          <CustomButton
+            type="button"
+            onClick={() => navigate('/dashboard')}
+            style={{
+              background: "#012E57",
+              color: "#fff",
+              textShadow: "0 1px 4px rgba(0,0,0,0.15)",
+              border: "1px solid #fff",
+            }}
+          >
+            Dashboard
+          </CustomButton>
           <CustomButton
             type="button"
             onClick={() => setShowAllAdmins(v => !v)}
             style={{
-              position: "fixed",
-              top: 24,
-              right: 32,
-              zIndex: 10000,
               background: showAllAdmins ? "#FFD700" : "#012E57",
               color: showAllAdmins ? "#151515" : "#fff",
               border: "1px solid #fff",
-              borderRadius: "8px",
-              padding: "0.7rem 1.2rem",
-              fontWeight: "bold",
               boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
-              cursor: "pointer",
               transition: "background 0.2s, color 0.2s",
-              scrollbarWidth: "none",
             }}
           >
             {showAllAdmins ? "Modo Master" : "Modo Admin"}
           </CustomButton>
-        )}
-        {/* Conteúdo principal aparece imediatamente, sem FadeIn para priorizar LCP */}
+        </div>
+      )}
+      <FadeIn show={showContent}>
         <div style={{
           width: "100vw",
           minHeight: "100vh",
@@ -271,35 +285,38 @@ export default function ImageManager() {
               onClose={() => { setModalOpen(false); setImgToDelete(null); }}
               onConfirm={confirmDelete}
             />
-            <div style={{
-              width: "100%",
-              flex: 1,
-              overflowY: "auto",
-              width: isMobile ? "80vw" : "100%",
-              marginTop: "1.5rem",
-              marginBottom: "1.5rem",
-              borderRadius: "12px",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-              background: "transparent",
-              scrollbarWidth: "none",
-              padding: "1rem",
-
-            }}
-              className="hide-scrollbar"
-            >
-              <ImageList
-                imagens={imagens}
-                isMobile={isMobile}
-                usuario={usuario}
-                isAdmin={isAdmin}
-                onDelete={(id) => { setModalOpen(true); setImgToDelete(id); }}
-                onAssociate={(imgId) => navigate(`/content?imageId=${imgId}&ownerId=${usuario?.uid}`)}
-              />
-            </div>
+            {/* Renderiza lista de imagens apenas após carregamento */}
+            {imagensLoaded ? (
+              <div style={{
+                flex: 1,
+                overflowY: "auto",
+                width: isMobile ? "80vw" : "100%",
+                marginTop: "1.5rem",
+                marginBottom: "1.5rem",
+                borderRadius: "12px",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+                background: "transparent",
+                scrollbarWidth: "none",
+                padding: "1rem",
+              }}
+                className="hide-scrollbar"
+              >
+                <ImageList
+                  imagens={imagens}
+                  isMobile={isMobile}
+                  usuario={usuario}
+                  isAdmin={isAdmin}
+                  onDelete={(id) => { setModalOpen(true); setImgToDelete(id); }}
+                  onAssociate={(imgId) => navigate(`/content?imageId=${imgId}&ownerId=${usuario?.uid}`)}
+                />
+              </div>
+            ) : (
+              <div style={{ color: "#012E57", marginTop: "2rem" }}>Carregando imagens...</div>
+            )}
             <Copyright />
           </div>
         </div>
-      </div>
+      </FadeIn>
       <div style={{
         position: "fixed",
         right: "32px",
@@ -308,25 +325,6 @@ export default function ImageManager() {
         boxShadow: "0 4px 16px rgba(1,46,87,0.18)",
         borderRadius: "12px"
       }}>
-        <CustomButton
-          type="button"
-          onClick={() => navigate('/dashboard')}
-          style={{
-            background: "#012E57",
-            color: "#fff",
-            textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-            borderStyle: "solid",
-            borderWidth: "1px",
-            borderColor: "rgba(255,255,255,0.90)",
-            fontWeight: "bold",
-            fontSize: "1.08em",
-            borderRadius: "12px",
-            cursor: "pointer"
-          }}
-        >
-          Dashboard
-        </CustomButton>
       </div>
-    </>
-  );
+    </div>);
 }

@@ -54,12 +54,11 @@ export default function AdminForm({ email, senha, setEmail, setSenha, handleRegi
                     type="submit"
                     onClick={() => { }}
                     style={{
-                        background: "#FFD700",
+                        background: "#4cd964",
                         color: "#151515",
                         textShadow: "2px 2px 4px rgba(0,0,0,0.15)",
                         width: isMobile ? "80vw" : "100%",
-                        borderWidth: "1px",
-                        borderColor: "rgba(255,255,255,0.90)",
+                        border: '1px solid #ffffff',
                     }}>
                     Cadastrar
                 </CustomButton>
