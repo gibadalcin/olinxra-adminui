@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 
 
 export default function Header() {
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 769);
+    const Width = 768;
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= Width);
 
     useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth <= 769);
+            setIsMobile(window.innerWidth <= Width);
         };
 
         window.addEventListener("resize", handleResize);
@@ -22,8 +23,7 @@ export default function Header() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            marginTop: "8rem",
-            marginBottom: "2rem",
+            marginBottom: isMobile ? "2rem" : "0",
             marginInline: "4rem",
         }}>
             <img

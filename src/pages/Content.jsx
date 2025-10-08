@@ -5,7 +5,6 @@ import Header from "../components/Header";
 import MainTitle from "../components/MainTitle";
 import Copyright from "../components/Copyright";
 import CustomButton from "../components/CustomButton";
-import CoordinatesFields from "../components/CoordinatesFields";
 import UrlInputs from "../components/URLInputs";
 import { fetchMarcas, fetchImagesByOwner } from "../api";
 import BrandSelect from "../components/BrandSelect";
@@ -13,6 +12,7 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import LocationPicker from "../components/LocationPicker";
 
 export default function Content({ isMaster, ownerId, imageId }) {
+    const [width, setWidth] = useState(768);
     const [marca, setMarca] = useState("");
     const [marcas, setMarcas] = useState([]);
     const [texto, setTexto] = useState("");
@@ -21,14 +21,14 @@ export default function Content({ isMaster, ownerId, imageId }) {
     const [videos, setVideos] = useState("");
     const [latitude, setLatitude] = useState("");
     const [longitude, setLongitude] = useState("");
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 994);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= width);
     const [loadingMarcas, setLoadingMarcas] = useState(true);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         function handleResize() {
-            setIsMobile(window.innerWidth <= 994);
+            setIsMobile(window.innerWidth <= width);
         }
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
@@ -130,7 +130,7 @@ export default function Content({ isMaster, ownerId, imageId }) {
                 minHeight: "100vh",
                 width: "100vw",
                 backgroundImage: "url('/login.svg')",
-                backgroundPosition: "right bottom",
+                backgroundPosition: "right 0% bottom 30%",
                 backgroundRepeat: "no-repeat",
                 backgroundAttachment: "fixed",
                 position: "relative",
@@ -163,11 +163,12 @@ export default function Content({ isMaster, ownerId, imageId }) {
                 }}
                 title="Voltar para gerenciamento de imagens"
             >
-                <IoArrowBackOutline size={isMobile ? 44 : 54} color="#ffffff" />
+                <IoArrowBackOutline size={isMobile ? 38 : 44} color="#ffffff" />
             </button>
             <Box
                 sx={{
                     width: '100vw',
+                    paddingTop: "4rem",
                     flex: 1,
                     backgroundColor: "rgba(255,255,255,0.08)",
                     borderRadius: "12px",
@@ -185,7 +186,6 @@ export default function Content({ isMaster, ownerId, imageId }) {
                     "&::-webkit-scrollbar": {
                         display: "none",
                     },
-                    paddingBottom: "120px", // espaço para o rodapé
                 }}
             >
                 <Header />
@@ -306,6 +306,7 @@ export default function Content({ isMaster, ownerId, imageId }) {
                             Dashboard
                         </CustomButton>
                     </div>
+                    <Copyright />
                 </form>
                 {!loadingMarcas && marcas.length === 0 && (
                     <p style={{ marginTop: 16 }}>
@@ -313,7 +314,6 @@ export default function Content({ isMaster, ownerId, imageId }) {
                     </p>
                 )}
             </Box>
-            <Copyright />
         </div>
     );
 }

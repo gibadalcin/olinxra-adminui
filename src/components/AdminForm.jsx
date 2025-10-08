@@ -7,11 +7,8 @@ export default function AdminForm({ email, senha, setEmail, setSenha, handleRegi
             onSubmit={handleRegister}
             style={{
                 ...formStyle,
-                maxWidth: "500px",
-                marginLeft: "auto",
-                marginRight: "auto",
                 marginTop: isMobile ? "1rem" : "2rem",
-                marginBottom: isMobile ? "1rem" : "2rem"
+                marginBottom: isMobile ? "1rem" : "2rem",
             }}
         >
             <div
@@ -19,7 +16,6 @@ export default function AdminForm({ email, senha, setEmail, setSenha, handleRegi
                     display: "flex",
                     flexDirection: window.innerWidth < 1420 ? "column" : "row",
                     gap: "1rem",
-                    width: "100%",
                     alignItems: "center",
                     justifyContent: "center"
                 }}
@@ -34,7 +30,7 @@ export default function AdminForm({ email, senha, setEmail, setSenha, handleRegi
                         background: "#fff",
                         borderRadius: "6px",
                         padding: "0.5rem",
-                        width: isMobile ? "80%" : "auto",
+                        width: isMobile ? "80vw" : "100%",
                         border: "none",
                         fontSize: "16px"
                     }}
@@ -49,7 +45,7 @@ export default function AdminForm({ email, senha, setEmail, setSenha, handleRegi
                         background: "#fff",
                         borderRadius: "6px",
                         padding: "0.5rem",
-                        width: isMobile ? "80%" : "auto",
+                        width: isMobile ? "80vw" : "100%",
                         border: "none",
                         fontSize: "16px"
                     }}
@@ -61,8 +57,7 @@ export default function AdminForm({ email, senha, setEmail, setSenha, handleRegi
                         background: "#FFD700",
                         color: "#151515",
                         textShadow: "2px 2px 4px rgba(0,0,0,0.15)",
-                        width: isMobile ? "80%" : "auto",
-                        borderStyle: "solid",
+                        width: isMobile ? "80vw" : "100%",
                         borderWidth: "1px",
                         borderColor: "rgba(255,255,255,0.90)",
                     }}>
@@ -75,7 +70,7 @@ export default function AdminForm({ email, senha, setEmail, setSenha, handleRegi
                         background: "#012E57",
                         color: "#fff",
                         textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                        width: isMobile ? "80%" : "auto",
+                        width: isMobile ? "80vw" : "100%",
                         borderStyle: "solid",
                         borderWidth: "1px",
                         borderColor: "rgba(255,255,255,0.90)",

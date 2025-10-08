@@ -10,7 +10,7 @@ export default function Copyright() {
     return (
         <footer
             style={{
-                position: 'absolute',
+
                 bottom: 0,
                 textAlign: "center",
                 color: "#fff",

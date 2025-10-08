@@ -21,7 +21,7 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                 gap: "1rem",
                 alignItems: "center",
                 justifyContent: "center",
-                width: isMobile ? 220 : 290,
+                width: '80%',
                 maxWidth: "600px",
             }}>
             <input
@@ -45,7 +45,7 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                     borderRadius: "6px",
                     padding: "0.5rem",
                     border: "none",
-                    width: "100%",
+                    width: isMobile ? "80vw" : "100%",
                     fontSize: "16px",
                 }}
             />
@@ -59,7 +59,7 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                     background: "#fff",
                     borderRadius: "6px",
                     padding: "0.5rem",
-                    width: "100%",
+                    width: isMobile ? "80vw" : "100%",
                     border: "none",
                     fontSize: "16px"
                 }}
@@ -71,7 +71,7 @@ export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile
                     background: "#FFD700",
                     color: "#151515",
                     textShadow: "2px 2px 4px rgba(0,0,0,0.15)",
-                    width: "100%",
+                    width: isMobile ? "80vw" : "100%",
                     borderStyle: "solid",
                     borderWidth: "1px",
                     borderColor: "rgba(255,255,255,0.90)",

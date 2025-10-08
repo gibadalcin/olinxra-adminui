@@ -147,12 +147,13 @@ export default function Register() {
         <div style={{
             width: "100vw",
             minHeight: "100vh",
+            backgroundColor: "#000012",
             overflow: "hidden",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             backgroundImage: "url('/login.svg')",
-            backgroundPosition: "center bottom",
+            backgroundPosition: "right 24% bottom 40%",
             backgroundRepeat: "no-repeat",
         }}>
             <FadeIn show={showContent}>
@@ -161,7 +162,6 @@ export default function Register() {
                     minHeight: "100vh",
                     display: showContent ? "flex" : "none",
                     alignItems: "center",
-                    justifyContent: "center",
                     flexDirection: isMobile ? "column" : "row",
                 }}>
                     {/* Header lateral no desktop */}
@@ -171,25 +171,21 @@ export default function Register() {
                             border: "1px solid rgba(255,255,255,0.18)",
                             backdropFilter: "blur(18px)",
                             WebkitBackdropFilter: "blur(18px)",
-                            paddingInline: isMobile ? "1rem" : "4rem",
-                            width: "20%",
                             height: "100%",
                             display: "flex",
                             flexDirection: "column",
                             justifyContent: "center",
-                            alignItems: "center"
+                            alignItems: "center",
                         }}>
                             <Header />
                         </div>
                     )}
                     {/* Conteúdo principal */}
                     <div style={{
-                        padding: isMobile ? "1rem" : "2rem",
-                        borderRadius: "16px",
                         width: '100%',
                         height: '100%',
-                        justifyContent: "center",
                         alignItems: "center",
+                        justifyContent: "center",
                         display: "flex",
                         flexDirection: "column",
                         border: "1px solid rgba(255,255,255,0.18)",
@@ -210,11 +206,11 @@ export default function Register() {
                             sucesso={sucesso}
                             navigate={navigate}
                             formStyle={{
-                                display: "flex",
+
                                 flexDirection: formDirection,
                                 flexWrap: "wrap",
                                 gap: "1rem",
-                                width: "100%",
+                                width: "80%",
                                 justifyContent: "center",
                                 alignItems: "center",
                             }}
@@ -222,14 +218,10 @@ export default function Register() {
                         {/* Lista de administradores */}
                         <div
                             style={{
-                                background: "rgba(255,255,255,0.24)",
+                                background: "transparent",
                                 padding: isMobile ? "0.5rem" : "1.5rem",
                                 borderRadius: "8px",
-                                boxShadow: "0 4px 32px rgba(0,0,0,0.25)",
                                 width: "94%",
-                                border: "1px solid rgba(255,255,255,0.18)",
-                                backdropFilter: "blur(18px)",
-                                WebkitBackdropFilter: "blur(18px)",
                                 textAlign: "center",
                                 margin: isMobile ? "16px auto" : "24px auto",
                                 maxHeight: isMobile ? "260px" : "340px",
@@ -256,6 +248,6 @@ export default function Register() {
                     </div>
                 </div>
             </FadeIn>
-        </div>
+        </div >
     );
 }

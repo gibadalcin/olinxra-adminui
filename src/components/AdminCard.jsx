@@ -7,7 +7,7 @@ export default function AdminCard({ admin, isMaster, isMobile, onDelete, style }
                 display: "inline-flex",
                 alignItems: "center",
                 background: '#ffffff88',
-                borderRadius: "12px",
+                borderRadius: "22px",
                 padding: isMobile ? "0.3rem 0.8rem" : "0.4rem 1.2rem",
                 margin: "0.2rem",
                 boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
@@ -15,6 +15,7 @@ export default function AdminCard({ admin, isMaster, isMobile, onDelete, style }
                 wordBreak: "break-word",
                 border: isMaster ? "1px solid #d32f2f" : "1px solid #2ecc40",
                 maxWidth: "320px",
+                height: "24px",
                 ...style
             }}
         >
@@ -39,8 +40,9 @@ export default function AdminCard({ admin, isMaster, isMobile, onDelete, style }
                     cursor: "pointer",
                     padding: 0,
                     marginLeft: "0.2rem",
-                    display: "flex",
-                    alignItems: "center"
+                    position: "relative",
+                    top: "-1px",
+                    lineHeight: 1,
                 }}
                 title="Excluir administrador"
             >

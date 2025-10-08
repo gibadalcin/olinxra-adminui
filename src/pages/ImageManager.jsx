@@ -160,7 +160,7 @@ export default function ImageManager() {
       <div
         style={{
           width: "100vw",
-          height: "100vh",
+          height: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -239,7 +239,6 @@ export default function ImageManager() {
             </div>
           )}
           <div style={{
-            padding: isMobile ? "2rem 0" : "2rem",
             width: '100%',
             height: '100vh',
             justifyContent: "center",
@@ -250,7 +249,7 @@ export default function ImageManager() {
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
             textAlign: "center",
-            paddingTop: isMobile ? 0 : 100,
+            paddingTop: isMobile ? '4rem' : '0',
           }}>
             {isMobile && <Header />}
             <MainTitle isMobile={isMobile}>Gerenciamento de Imagens</MainTitle>
@@ -276,7 +275,7 @@ export default function ImageManager() {
               width: "100%",
               flex: 1,
               overflowY: "auto",
-              maxHeight: isMobile ? "100vh" : "100vh",
+              width: isMobile ? "80vw" : "100%",
               marginTop: "1.5rem",
               marginBottom: "1.5rem",
               borderRadius: "12px",
@@ -316,8 +315,6 @@ export default function ImageManager() {
             background: "#012E57",
             color: "#fff",
             textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-            minWidth: "120px",
-            padding: "0.8rem 1.6rem",
             borderStyle: "solid",
             borderWidth: "1px",
             borderColor: "rgba(255,255,255,0.90)",
