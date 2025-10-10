@@ -3,26 +3,25 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import CustomButton from "../components/CustomButton";
 import Header from "../components/Header";
 import Copyright from "../components/Copyright";
 import MainTitle from "../components/MainTitle";
 import FadeIn from "../components/FadeIn";
-import LoginHeader from "../components/LoginHeader";
 import LoginForm from "../components/LoginForm";
 
 export default function Login() {
+    const MOBILE_BREAKPOINT = 768;
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [erro, setErro] = useState("");
     const [showFade, setShowFade] = useState(false);
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 994);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= MOBILE_BREAKPOINT);
     const navigate = useNavigate();
 
     useEffect(() => {
         setShowFade(true);
-        const handleResize = () => setIsMobile(window.innerWidth <= 994);
+        const handleResize = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
@@ -41,22 +40,7 @@ export default function Login() {
     };
 
     return (
-        <div
-            style={{
-                width: "100vw",
-                minHeight: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "#012E57",
-                backgroundSize: "cover",
-                backgroundPosition: "center top",
-                backgroundRepeat: "no-repeat",
-                overflow: "hidden",
-                position: "relative",
-            }}
-        >
+        <div>
             <FadeIn show={showFade} duration="0.6s" distance="40px">
                 <div
                     style={{
@@ -71,17 +55,12 @@ export default function Login() {
                     {!isMobile && (
                         <div
                             style={{
-                                background: "rgba(255,255,255,0.10)",
-                                padding: "2rem",
+                                background: "#ffffff",
                                 width: "100%",
                                 height: "100%",
                                 justifyContent: "center",
                                 alignItems: "center",
                                 display: "flex",
-                                flexDirection: "column",
-                                border: "1px solid rgba(255,255,255,0.18)",
-                                backdropFilter: "blur(18px)",
-                                WebkitBackdropFilter: "blur(18px)",
                                 textAlign: "center",
                             }}
                         >
@@ -90,19 +69,13 @@ export default function Login() {
                     )}
                     <div
                         style={{
-                            padding: isMobile ? "1rem" : "2rem",
-                            borderRadius: "16px",
+                            background: "#012E57",
                             width: isMobile ? "100%" : "60%",
-                            minWidth: "260px",
                             height: "100%",
                             justifyContent: "center",
                             alignItems: "center",
                             display: "flex",
                             flexDirection: "column",
-                            border: "1px solid rgba(255,255,255,0.18)",
-                            backdropFilter: "blur(18px)",
-                            WebkitBackdropFilter: "blur(18px)",
-                            textAlign: "center",
                         }}
                     >
                         {isMobile && <Header />}

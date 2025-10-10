@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import ImageManager from "./pages/ImageManager";
 import Register from "./pages/Register";
@@ -14,7 +15,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={
+          <ErrorBoundary>
+            <Login />
+          </ErrorBoundary>
+        } />
         <Route
           path="/dashboard"
           element={

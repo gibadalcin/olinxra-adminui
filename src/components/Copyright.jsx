@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 export default function Copyright() {
+    const MOBILE_BREAKPOINT = 768;
     // Responsividade dinâmica
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 994);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= MOBILE_BREAKPOINT);
     useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth <= 994);
+        const handleResize = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
@@ -16,7 +17,7 @@ export default function Copyright() {
                 color: "#fff",
                 fontSize: isMobile ? "0.85em" : "0.95em",
                 opacity: 0.7,
-                padding: isMobile ? "30px 0" : "90px 0",
+                padding: isMobile ? "30px 0" : "60px 0",
                 zIndex: 9999,
                 pointerEvents: 'none',
                 background: 'transparent',
