@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { TextField, Box } from "@mui/material";
 import Header from "../components/Header";
 import MainTitle from "../components/MainTitle";
@@ -12,7 +12,23 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import LocationPicker from "../components/LocationPicker";
 import FadeIn from "../components/FadeIn";
 
-export default function Content({ isMaster, ownerId, imageId }) {
+export default function Content() {
+    const location = useLocation();
+    const params = new URLSearchParams(location.search);
+    const ownerId = params.get("ownerId");
+    const imageId = params.get("imageId");
+
+    // Adicione esta verificação:
+    if (!ownerId) {
+        return (
+            <div style={{ color: "#fff", padding: "2rem" }}>
+                <h2>Erro ao carregar conteúdo</h2>
+                <p>Parâmetro <b>ownerId</b> não informado na URL.</p>
+                <CustomButton onClick={() => window.history.back()}>Voltar</CustomButton>
+            </div>
+        );
+    }
+
     const [width, setWidth] = useState(768);
     const [marca, setMarca] = useState("");
     const [marcas, setMarcas] = useState([]);
@@ -36,33 +52,35 @@ export default function Content({ isMaster, ownerId, imageId }) {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    useEffect(() => {
-        async function buscarMarcas() {
-            setLoadingMarcas(true);
-            try {
-                const user = window.auth?.currentUser;
-                if (!user) {
-                    setMarcas([]);
-                    setMarca("");
-                    return;
-                }
-                const token = await user.getIdToken();
-                const lista = ownerId ? await fetchMarcas(ownerId, token) : await fetchMarcas(user.uid, token);
-                setMarcas(lista || []);
-                if (lista && lista.length > 0) {
-                    setMarca(lista[0].nome);
-                } else {
-                    setMarca("");
-                }
-            } catch {
+    const buscarMarcas = useCallback(async () => {
+        setLoadingMarcas(true);
+        try {
+            const user = window.auth?.currentUser;
+            if (!user) {
                 setMarcas([]);
                 setMarca("");
-            } finally {
-                setLoadingMarcas(false);
+                return;
             }
+            const token = await user.getIdToken();
+            const idToFetch = ownerId || user.uid;
+            const lista = await fetchMarcas(idToFetch, token);
+            setMarcas(lista || []);
+            if (lista && lista.length > 0) {
+                setMarca(lista[0].nome);
+            } else {
+                setMarca("");
+            }
+        } catch {
+            setMarcas([]);
+            setMarca("");
+        } finally {
+            setLoadingMarcas(false);
         }
+    }, [ownerId]);
+
+    useEffect(() => {
         buscarMarcas();
-    }, [ownerId, imageId]);
+    }, [buscarMarcas, imageId]);
 
     useEffect(() => {
         setImagens([]);
@@ -78,7 +96,7 @@ export default function Content({ isMaster, ownerId, imageId }) {
                 }
                 const token = await user.getIdToken();
                 let imagensArray = [];
-                if (isMaster && ownerId) {
+                if (ownerId) {
                     const imgs = await fetchImagesByOwner(ownerId, token);
                     imagensArray = imgs.map(img => img.url);
                 } else {
@@ -100,7 +118,7 @@ export default function Content({ isMaster, ownerId, imageId }) {
             }
         }
         buscarImagens();
-    }, [isMaster, ownerId, imageId]);
+    }, [ownerId, imageId]);
 
     useEffect(() => {
         setTimeout(() => setShowContent(true), 400);
@@ -261,13 +279,19 @@ export default function Content({ isMaster, ownerId, imageId }) {
                                 />
                             </div>
                             <div style={{ flex: 1 }}>
-                                <BrandSelect
-                                    marca={marca}
-                                    setMarca={setMarca}
+                                <select
+                                    value={marca}
+                                    onChange={e => setMarca(e.target.value)}
                                     disabled={loadingMarcas || marcas.length === 0}
-                                    marcas={marcas}
-                                    loading={loadingMarcas}
-                                />
+                                    style={{ width: "100%", padding: "8px", fontSize: "1rem", borderRadius: "6px" }}
+                                >
+                                    <option value="" disabled>Selecione uma marca</option>
+                                    {marcas.map(m => (
+                                        <option key={m.id} value={m.nome}>
+                                            {m.nome}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
                         <TextField

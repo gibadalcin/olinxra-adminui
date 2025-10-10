@@ -1,4 +1,3 @@
-import React from "react";
 import CustomButton from "../components/CustomButton";
 
 export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile, uploading, handleUpload, onDashboardClick }) {

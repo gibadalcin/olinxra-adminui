@@ -1,6 +1,5 @@
 import React from "react";
 import AdminCard from "./AdminCard";
-import useIsMasterAdmin from "../hooks/useIsMasterAdmin";
 
 export default function AdminList({ admins, isMobile, onDelete }) {
     if (!admins || admins.length === 0) {
@@ -14,20 +13,14 @@ export default function AdminList({ admins, isMobile, onDelete }) {
             justifyContent: "center",
             alignItems: "center"
         }}>
-            {admins.map(admin => {
-                const uid = admin.uid || "";
-                const email = admin.email || "";
-                const isMaster = useIsMasterAdmin({ uid, email });
-                return (
-                    <AdminCard
-                        key={uid}
-                        admin={admin}
-                        isMaster={isMaster}
-                        isMobile={isMobile}
-                        onDelete={onDelete}
-                    />
-                );
-            })}
+            {admins.map(admin => (
+                <AdminCard
+                    key={admin.uid}
+                    admin={admin}
+                    isMobile={isMobile}
+                    onDelete={onDelete}
+                />
+            ))}
         </div>
     );
 }

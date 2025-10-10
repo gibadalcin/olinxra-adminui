@@ -1,9 +1,10 @@
-import React from "react";
 import CustomButton from "../components/CustomButton";
 import { FiPlus, FiX } from "react-icons/fi";
 import useIsMasterAdmin from "../hooks/useIsMasterAdmin";
+import { useNavigate } from "react-router-dom";
 
-export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, onAssociate }) {
+export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete }) {
+    const navigate = useNavigate();
     // Trate o risco de undefined
     const ownerUid = img.owner_uid || "";
     // Se ownerUid vier vazio, isMaster será false
@@ -121,7 +122,7 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete, o
                     maxWidth: "220px" // <-- garante que os botões não ultrapassem o card
                 }}>
                     <CustomButton
-                        onClick={() => onAssociate(img._id)}
+                        onClick={() => navigate(`/content?ownerId=${ownerUid}&imageId=${img._id}`)}
                         style={{
                             background: "linear-gradient(90deg, #00e913ff 0%, #04aa20ff 100%)",
                             textShadow: "0 1px 4px rgba(0,0,0,0.15)",

@@ -1,4 +1,3 @@
-import React from "react";
 import CustomButton from "./CustomButton";
 
 export default function DeleteImageModal({ open, imgToDelete, imagens, onConfirm, onClose }) {

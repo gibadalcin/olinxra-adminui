@@ -1,4 +1,3 @@
-import React from "react";
 import CustomButton from "./CustomButton";
 
 export default function DeleteAdminModal({ open, adminToDelete, onConfirm, onCancel }) {

@@ -1,6 +1,3 @@
-import React from "react";
-import CustomButton from "./CustomButton";
-
 export default function UserInfo({ usuario, isMobile }) {
     return (
         <>

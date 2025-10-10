@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ImageCard from "./ImageCard";
 import Content from "../pages/Content";
 
@@ -27,7 +27,7 @@ export default function ImageList({ imagens, isMobile, isAdmin, usuario, onDelet
                     isAdmin={isAdmin}
                     usuario={usuario}
                     onDelete={onDelete}
-                    onAssociate={onAssociate}
+                    onAssociate={(imgId, ownerUid) => onAssociate(imgId, ownerUid)}
                     onClick={() => setImagemSelecionada(img)}
                 />
             ))}

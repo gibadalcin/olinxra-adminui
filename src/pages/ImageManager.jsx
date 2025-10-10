@@ -259,7 +259,6 @@ export default function ImageManager() {
             alignItems: "center",
             display: "flex",
             flexDirection: "column",
-            border: "1px solid rgba(255,255,255,0.18)",
             backdropFilter: "blur(18px)",
             WebkitBackdropFilter: "blur(18px)",
             textAlign: "center",
@@ -307,7 +306,7 @@ export default function ImageManager() {
                   usuario={usuario}
                   isAdmin={isAdmin}
                   onDelete={(id) => { setModalOpen(true); setImgToDelete(id); }}
-                  onAssociate={(imgId) => navigate(`/content?imageId=${imgId}&ownerId=${usuario?.uid}`)}
+                  onAssociate={(imgId, ownerUid) => navigate(`/content?imageId=${imgId}&ownerId=${ownerUid}`)}
                 />
               </div>
             ) : (

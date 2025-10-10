@@ -1,4 +1,3 @@
-import React from "react";
 import CustomButton from "../components/CustomButton";
 
 export default function AdminForm({ email, senha, setEmail, setSenha, handleRegister, isMobile, erro, sucesso, navigate, formStyle }) {
