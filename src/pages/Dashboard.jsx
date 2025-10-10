@@ -11,14 +11,15 @@ import UserInfo from "../components/UserInfo";
 import DashboardActions from "../components/DashboardActions";
 
 export default function Dashboard() {
+    const MOBILE_BREAKPOINT = 768;
     const [usuario, setUsuario] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showContent, setShowContent] = useState(false);
     const navigate = useNavigate();
-    const [isMobile, setIsMobile] = useState(window.innerWidth <= 994);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= MOBILE_BREAKPOINT);
 
     useEffect(() => {
-        const handleResize = () => setIsMobile(window.innerWidth <= 994);
+        const handleResize = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
@@ -38,20 +39,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div style={{
-            width: "100vw",
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "#012E57",
-            backgroundSize: "cover",
-            backgroundPosition: "center top",
-            backgroundRepeat: "no-repeat",
-            overflow: "hidden", // Evita scroll durante transição
-            position: "relative", // Para posicionar o Loader
-        }}>
+        <div>
             {/* Loader aparece sobre o fundo, antes dos componentes */}
             {(!showContent || loading) && (
                 <div style={{
@@ -100,6 +88,7 @@ export default function Dashboard() {
                     <div style={{
                         padding: isMobile ? "1rem" : "2rem",
                         borderRadius: "16px",
+                        background: "#012E57",
                         border: "1px solid rgba(255,255,255,0.18)",
                         width: isMobile ? '100%' : '60%',
                         height: '100%',
