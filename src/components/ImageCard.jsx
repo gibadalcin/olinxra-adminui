@@ -77,18 +77,18 @@ export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete })
             {img.url ? (
                 <img
                     src={img.url}
-                    alt={img.nome}
+                    srcSet={img.webpUrl ? `${img.webpUrl} 1x, ${img.webpUrl2x} 2x` : undefined}
+                    width={212}
+                    height={119}
+                    alt={img.name || "Logo"}
                     style={{
-                        width: "100%",
-                        aspectRatio: "16/9",
-                        borderRadius: "2px",
+                        maxWidth: "100%",
+                        height: "auto",
                         objectFit: "contain",
-                        background: "#eee",
-                        display: "block",
-                        boxShadow: "0 1px 8px rgba(0,0,0,0.10)",
-                        maxWidth: "220px",
-                        maxHeight: "123px",
+                        borderRadius: 8,
+                        background: "#fff"
                     }}
+                    fetchPriority="high" // <-- Correto em React
                 />
             ) : (
                 <div

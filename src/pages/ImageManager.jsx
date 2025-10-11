@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { auth } from "../firebaseConfig";
 import { getImages, deleteImage, uploadLogo } from "../api";
 import { useNavigate } from "react-router-dom";
@@ -8,11 +8,29 @@ import Copyright from "../components/Copyright";
 import MainTitle from "../components/MainTitle";
 import CustomButton from "../components/CustomButton";
 import FadeIn from "../components/FadeIn";
-
-// Novos componentes modularizados
 import ImageUploadForm from "../components/ImageUploadForm";
 import ImageList from "../components/ImageList";
 import DeleteImageModal from "../components/DeleteImageModal";
+
+const MOBILE_BREAKPOINT = 768;
+const MAIN_BG_COLOR = "#012E57";
+const LEFT_COL_BG_COLOR = "#ffffff";
+
+// Função utilitária para normalizar a resposta da API (simplificada)
+const normalizeImagesResponse = (res) => {
+  // Tenta extrair um array de imagens do objeto de resposta
+  const data = res?.data || res;
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+
+  // Se o formato é estranho (ex: { key: [img1, img2] }), tenta encontrar o array
+  if (data && typeof data === 'object') {
+    const arr = Object.values(data).find(v => Array.isArray(v));
+    return arr || [];
+  }
+  return [];
+};
+
 
 export default function ImageManager() {
   const [usuario, setUsuario] = useState(null);
@@ -24,132 +42,121 @@ export default function ImageManager() {
   const [modalOpen, setModalOpen] = useState(false);
   const [imgToDelete, setImgToDelete] = useState(null);
   const [showAllAdmins, setShowAllAdmins] = useState(true);
-  const navigate = useNavigate();
-  const width = 994;
-
-  // Responsividade dinâmica
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= width);
-
-  // Controle de transição do conteúdo
   const [showContent, setShowContent] = useState(false);
   const [imagensLoaded, setImagensLoaded] = useState(false);
+  const navigate = useNavigate();
 
+  const initialIsMobile = useMemo(() => window.innerWidth <= MOBILE_BREAKPOINT, []);
+  const [isMobile, setIsMobile] = useState(initialIsMobile);
+
+  const isAdmin = useMemo(() =>
+    usuario?.email === import.meta.env.VITE_USER_ADMIN_EMAIL,
+    [usuario]
+  );
+
+  // --- Efeitos de Componente ---
+
+  // 1. Efeito de Redimensionamento (Responsividade)
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= width);
+    const handleResize = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // 2. Efeito de Autenticação (Observador)
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUsuario(user);
-      if (user) {
-        console.log("UID do usuário logado:", user.uid);
-      }
+      // Se o usuário não estiver logado, encerra o loading
+      if (!user) setLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
+  // 3. Função Centralizada de Busca de Imagens (Otimização)
+  const fetchImages = useCallback(async () => {
+    if (!usuario) return;
+
+    setLoading(true);
+    try {
+      const token = await usuario.getIdToken();
+      const idToFetch = isAdmin && showAllAdmins ? null : usuario.uid; // null para todas as imagens (master)
+
+      const res = await getImages(token, idToFetch);
+
+      const imagensArray = normalizeImagesResponse(res);
+      setImagens(imagensArray);
+    } catch (error) {
+      console.error("Erro ao buscar imagens:", error);
+      setImagens([]);
+    } finally {
+      setLoading(false);
+      setImagensLoaded(true);
+    }
+  }, [usuario, isAdmin, showAllAdmins]); // Dependências: usuário, status Master/Admin
+
+  // 4. Efeito para Disparar a Busca de Imagens
   useEffect(() => {
     if (usuario) {
-      usuario.getIdToken().then((token) => {
-        const isMaster = usuario.email === import.meta.env.VITE_USER_ADMIN_EMAIL;
-        const handleResponse = (res) => {
-          let imagensArray = [];
-          if (Array.isArray(res.data)) {
-            imagensArray = res.data;
-          } else if (Array.isArray(res.data?.data)) {
-            imagensArray = res.data.data;
-          } else if (res.data && typeof res.data === 'object') {
-            const arr = Object.values(res.data).find(v => Array.isArray(v));
-            imagensArray = arr || [];
-          }
-          setImagens(imagensArray);
-          setLoading(false);
-          setImagensLoaded(true);
-        };
-        if (isMaster) {
-          if (showAllAdmins) {
-            // Mostra todas as imagens
-            getImages(token).then(handleResponse).catch(() => {
-              setImagens([]);
-              setLoading(false);
-              setImagensLoaded(true);
-            });
-          } else {
-            // Mostra apenas as imagens do master
-            getImages(token, usuario.uid).then(handleResponse).catch(() => {
-              setImagens([]);
-              setLoading(false);
-              setImagensLoaded(true);
-            });
-          }
-        } else {
-          getImages(token, usuario.uid).then(handleResponse).catch(() => {
-            setImagens([]);
-            setLoading(false);
-            setImagensLoaded(true);
-          });
-        }
-      });
+      fetchImages();
     }
-  }, [usuario, showAllAdmins]);
+  }, [usuario, fetchImages]);
 
+  // 5. Efeito de FadeIn
   useEffect(() => {
-    setTimeout(() => setShowContent(true), 400);
+    const timer = setTimeout(() => setShowContent(true), 400);
+    return () => clearTimeout(timer);
   }, []);
+
+  // --- Handlers de Ação ---
 
   const handleDelete = async (id) => {
     if (!usuario) return;
-    const token = await usuario.getIdToken();
-    await deleteImage(id, token);
-    setImagens(imagens.filter(img => img._id !== id));
+    setLoading(true); // Opcional: mostrar loading durante a exclusão
+
+    try {
+      const token = await usuario.getIdToken();
+      await deleteImage(id, token);
+      // Atualiza o estado localmente para feedback rápido
+      setImagens(prevImagens => prevImagens.filter(img => img._id !== id));
+    } catch (error) {
+      console.error("Erro ao deletar imagem:", error);
+      alert("Erro ao deletar imagem.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!file || !nome || !usuario) return;
+
     setUploading(true);
     const token = await usuario.getIdToken();
     const formData = new FormData();
     formData.append("file", file);
     formData.append("name", nome);
+
     try {
       const response = await uploadLogo(formData, token);
+
       if (!response.ok) {
         const data = await response.json();
         if (response.status === 400 && data.detail?.includes("imagem com esse nome")) {
           alert("Já existe uma imagem com esse nome!");
-          setUploading(false);
-          return;
+        } else {
+          alert("Erro ao enviar imagem.");
         }
-        alert("Erro ao enviar imagem.");
-        setUploading(false);
-        return;
-      }
-      setNome("");
-      setFile(null);
-      setUploading(false);
-      const isMaster = usuario.email === import.meta.env.VITE_USER_ADMIN_EMAIL;
-      const handleResponse = (res) => {
-        let imagensArray = [];
-        if (Array.isArray(res.data)) {
-          imagensArray = res.data;
-        } else if (Array.isArray(res.data?.data)) {
-          imagensArray = res.data.data;
-        } else if (res.data && typeof res.data === 'object') {
-          const arr = Object.values(res.data).find(v => Array.isArray(v));
-          imagensArray = arr || [];
-        }
-        setImagens(imagensArray);
-      };
-      if (isMaster) {
-        getImages(token).then(handleResponse);
       } else {
-        getImages(token, usuario.uid).then(handleResponse);
+        // Sucesso: Limpa o formulário e recarrega a lista
+        setNome("");
+        setFile(null);
+        await fetchImages(); // Reutiliza a função de busca
       }
     } catch (err) {
+      console.error("Erro no upload:", err);
       alert("Erro ao enviar imagem.");
+    } finally {
       setUploading(false);
     }
   };
@@ -161,58 +168,52 @@ export default function ImageManager() {
     setImgToDelete(null);
   };
 
-  const isAdmin = usuario?.email === import.meta.env.VITE_USER_ADMIN_EMAIL;
+  const handleNavigateToContent = (imgId, ownerUid) => {
+    // Navega, garantindo que o ownerId seja o ID correto para o Master
+    const ownerIdParam = isAdmin ? (ownerUid || usuario.uid) : usuario.uid;
+    navigate(`/content?imageId=${imgId}&ownerId=${ownerIdParam}`);
+  };
+
+
+  // --- Renderização ---
+
+  // Exibe o Loader enquanto carrega dados ou autentica
+  const shouldShowLoader = loading || !usuario || !showContent;
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        minHeight: "100vh",
-        background: "#012E57",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
-        position: "relative",
-      }}
-      className="hide-scrollbar"
-    >
-      {(!showContent || loading || !usuario) && (
+    // Container principal da aplicação
+    <div style={{ minHeight: "100vh", background: MAIN_BG_COLOR }}>
+
+      {/* Loader Full Screen (melhorado para ser mais conciso) */}
+      {shouldShowLoader && (
         <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
+          position: "fixed", // Usar fixed é mais seguro do que absolute com inset: 0
+          inset: 0,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           zIndex: 9999,
-          background: "#012E57",
+          background: MAIN_BG_COLOR,
         }}>
           <Loader />
         </div>
       )}
-      {/* Botão de alternância de modo para o usuário master */}
-      {usuario?.email === import.meta.env.VITE_USER_ADMIN_EMAIL && (
+
+      {/* Botões fixos do Admin/Master */}
+      {isAdmin && (
         <div style={{
           position: "fixed",
-          top: 24,
-          right: 32,
+          top: isMobile ? 16 : 32,
+          right: isMobile ? 16 : 32,
           zIndex: 10000,
           display: "flex",
           flexDirection: "column",
-          gap: "12px"
+          gap: 12
         }}>
           <CustomButton
             type="button"
             onClick={() => navigate('/dashboard')}
-            style={{
-              background: "#012E57",
-              color: "#fff",
-              textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-              border: "1px solid #fff",
-            }}
+            style={{ background: MAIN_BG_COLOR, color: "#fff", border: "1px solid #fff" }}
           >
             Dashboard
           </CustomButton>
@@ -220,110 +221,139 @@ export default function ImageManager() {
             type="button"
             onClick={() => setShowAllAdmins(v => !v)}
             style={{
-              background: showAllAdmins ? "#FFD700" : "#012E57",
+              background: showAllAdmins ? "#FFD700" : MAIN_BG_COLOR,
               color: showAllAdmins ? "#151515" : "#fff",
               border: "1px solid #fff",
               boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
               transition: "background 0.2s, color 0.2s",
             }}
+            disabled={loading}
           >
             {showAllAdmins ? "Modo Master" : "Modo Admin"}
           </CustomButton>
         </div>
       )}
-      <FadeIn show={showContent}>
-        <div style={{
-          width: "100vw",
-          minHeight: "100vh",
-          display: showContent ? "flex" : "none",
+
+      {/* Layout de Duas Colunas (Principal) */}
+      <div
+        style={{
+          display: "flex",
           flexDirection: isMobile ? "column" : "row",
-        }}>
-          {!isMobile && (
-            <div style={{
-              backgroundColor: "rgba(255, 255, 255, 0.1)",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-              border: "1px solid rgba(255,255,255,0.18)",
-              backdropFilter: "blur(18px)",
-              WebkitBackdropFilter: "blur(18px)",
+          width: "100vw",
+        }}
+      >
+        {/* COLUNA 1: HEADER/Branding (Branca - Desktop Only) */}
+        {!isMobile && (
+          <div
+            style={{
+              flex: isMobile ? "none" : 0.3,
+              background: LEFT_COL_BG_COLOR,
               display: "flex",
-              flexDirection: "column",
               justifyContent: "center",
-            }}>
+              alignItems: "center",
+              textAlign: "center",
+              padding: "2rem",
+              boxSizing: "border-box",
+            }}
+          >
+            <Header />
+          </div>
+        )}
+
+        {/* COLUNA 2: Conteúdo Principal (Azul) */}
+        <div
+          style={{
+            flex: isMobile ? "none" : 1,
+            width: isMobile ? "100%" : "70%",
+            background: MAIN_BG_COLOR,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            flexGrow: 1,
+            paddingTop: isMobile ? "1rem" : "0",
+            boxSizing: "border-box",
+            minHeight: "100vh",
+            justifyContent: "center",
+          }}
+        >
+          {/* Renderiza o Header apenas no mobile, nunca nos dois ao mesmo tempo */}
+          {isMobile && (
+            <div style={{ width: "100%", display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
               <Header />
             </div>
           )}
-          <div style={{
-            width: '100%',
-            height: '100vh',
-            justifyContent: "center",
-            alignItems: "center",
-            display: "flex",
-            flexDirection: "column",
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-            textAlign: "center",
-            paddingTop: isMobile ? '4rem' : '0',
-          }}>
-            {isMobile && <Header />}
-            <MainTitle isMobile={isMobile}>Gerenciamento de Imagens</MainTitle>
-            <ImageUploadForm
-              file={file}
-              setFile={setFile}
-              nome={nome}
-              setNome={setNome}
-              uploading={uploading}
-              handleUpload={handleUpload}
-              isMobile={isMobile}
-              isWide={window.innerWidth < 1600}
-              onDashboardClick={() => navigate("/dashboard")}
-            />
-            <DeleteImageModal
-              open={modalOpen}
-              imgToDelete={imgToDelete}
-              imagens={imagens}
-              onClose={() => { setModalOpen(false); setImgToDelete(null); }}
-              onConfirm={confirmDelete}
-            />
-            {/* Renderiza lista de imagens apenas após carregamento */}
-            {imagensLoaded ? (
-              <div style={{
-                flex: 1,
-                overflowY: "auto",
-                width: isMobile ? "80vw" : "100%",
-                marginTop: "1.5rem",
-                marginBottom: "1.5rem",
-                borderRadius: "12px",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-                background: "transparent",
-                scrollbarWidth: "none",
-                padding: "1rem",
+
+          <FadeIn show={showContent && imagensLoaded} duration="0.6s" distance="40px" style={{ width: "70vw" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: isMobile ? "1.2rem" : "2rem",
+                width: "100%",
+                maxWidth: "90%",
+                margin: "0 auto",
               }}
-                className="hide-scrollbar"
-              >
-                <ImageList
-                  imagens={imagens}
-                  isMobile={isMobile}
-                  usuario={usuario}
-                  isAdmin={isAdmin}
-                  onDelete={(id) => { setModalOpen(true); setImgToDelete(id); }}
-                  onAssociate={(imgId, ownerUid) => navigate(`/content?imageId=${imgId}&ownerId=${ownerUid}`)}
-                />
-              </div>
-            ) : (
-              <div style={{ color: "#012E57", marginTop: "2rem" }}>Carregando imagens...</div>
-            )}
-            <Copyright />
-          </div>
+            >
+              <MainTitle isMobile={isMobile}>Gerenciamento de Imagens</MainTitle>
+
+              <ImageUploadForm
+                file={file}
+                setFile={setFile}
+                nome={nome}
+                setNome={setNome}
+                uploading={uploading}
+                handleUpload={handleUpload}
+                isMobile={isMobile}
+                isWide={window.innerWidth < 1600}
+                onDashboardClick={() => navigate("/dashboard")}
+              />
+
+              <DeleteImageModal
+                open={modalOpen}
+                imgToDelete={imgToDelete}
+                imagens={imagens}
+                onClose={() => { setModalOpen(false); setImgToDelete(null); }}
+                onConfirm={confirmDelete}
+              />
+
+              {imagensLoaded && imagens.length > 0 && (
+                <div
+                  style={{
+                    width: "100%",
+                    overflowY: "auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 12,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+                    background: "transparent",
+                    scrollbarWidth: "none",
+                    height: "auto",
+                    maxHeight: "60vh",
+                  }}
+                >
+                  <ImageList
+                    imagens={imagens}
+                    isMobile={isMobile}
+                    usuario={usuario}
+                    isAdmin={isAdmin}
+                    onDelete={(id) => { setModalOpen(true); setImgToDelete(id); }}
+                    onAssociate={handleNavigateToContent}
+                  />
+                </div>
+              )}
+
+              {imagensLoaded && imagens.length === 0 && (
+                <p style={{ color: "#fff", marginTop: "2rem" }}>Nenhuma imagem encontrada.</p>
+              )}
+
+              <Copyright />
+            </div>
+          </FadeIn>
         </div>
-      </FadeIn>
-      <div style={{
-        position: "fixed",
-        right: "32px",
-        bottom: "32px",
-        zIndex: 10001,
-        boxShadow: "0 4px 16px rgba(1,46,87,0.18)",
-        borderRadius: "12px"
-      }}>
-      </div>
-    </div>);
+      </div >
+    </div>
+  );
 }

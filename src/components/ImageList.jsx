@@ -13,31 +13,40 @@ export default function ImageList({ imagens, isMobile, isAdmin, usuario, onDelet
         <div style={{
             display: "flex",
             flexWrap: "wrap",
-            gap: isMobile ? "1rem" : "2rem",
-            justifyContent: isMobile ? "center" : "left",
+            justifyContent: isMobile ? "center" : "flex-start",
+            padding: isMobile ? "1rem" : "2rem",
+            overflowY: "auto",
+            boxSizing: "border-box",
+            backgroundColor: "rgba(255,255,255,0.08)",
             width: "100%",
-            maxWidth: "96%",
-            margin: "0 auto",
         }}>
-            {imagens.map(img => (
-                <ImageCard
-                    key={img._id}
-                    img={img}
-                    isMobile={isMobile}
-                    isAdmin={isAdmin}
-                    usuario={usuario}
-                    onDelete={onDelete}
-                    onAssociate={(imgId, ownerUid) => onAssociate(imgId, ownerUid)}
-                    onClick={() => setImagemSelecionada(img)}
-                />
-            ))}
-            {imagemSelecionada && (
-                <Content
-                    isMaster={usuario.isMaster}
-                    ownerId={imagemSelecionada.owner_uid} // <-- deve ser o UID do dono da imagem!
-                    imageId={imagemSelecionada._id}
-                />
-            )}
+            <div style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: isMobile ? "1rem" : "2rem",
+                width: "100%",
+                margin: "0 auto",
+            }}>
+                {imagens.map(img => (
+                    <ImageCard
+                        key={img._id}
+                        img={img}
+                        isMobile={isMobile}
+                        isAdmin={isAdmin}
+                        usuario={usuario}
+                        onDelete={onDelete}
+                        onAssociate={(imgId, ownerUid) => onAssociate(imgId, ownerUid)}
+                        onClick={() => setImagemSelecionada(img)}
+                    />
+                ))}
+                {imagemSelecionada && (
+                    <Content
+                        isMaster={usuario.isMaster}
+                        ownerId={imagemSelecionada.owner_uid}
+                        imageId={imagemSelecionada._id}
+                    />
+                )}
+            </div>
         </div>
     );
 }
