@@ -1,4 +1,4 @@
-import CustomButton from "../components/CustomButton";
+import CustomButton from "./../globalContext/CustomButton";
 
 export default function AdminForm({ email, senha, setEmail, setSenha, handleRegister, isMobile, isTablet, erro, sucesso, navigate, formStyle }) {
     return (

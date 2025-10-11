@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import Header from "../components/Header";
-import Copyright from "../components/Copyright";
-import MainTitle from "../components/MainTitle";
-import FadeIn from "../components/FadeIn";
-import LoginForm from "../components/LoginForm";
+import Header from "../components/globalContext/Header";
+import Copyright from "../components/globalContext/Copyright";
+import MainTitle from "../components/globalContext/MainTitle";
+import FadeIn from "../components/globalContext/FadeIn";
+import LoginForm from "../components/loginContext/LoginForm";
 
 const MOBILE_BREAKPOINT = 768;
 const MAIN_BG_COLOR = "#012E57"; // Azul escuro

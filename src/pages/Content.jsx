@@ -1,15 +1,15 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { TextField, Box } from "@mui/material";
-import Header from "../components/Header";
-import MainTitle from "../components/MainTitle";
-import Copyright from "../components/Copyright";
-import CustomButton from "../components/CustomButton";
-import UrlInputs from "../components/URLInputs";
+import Header from "../components/globalContext/Header";
+import MainTitle from "../components/globalContext/MainTitle";
+import Copyright from "../components/globalContext/Copyright";
+import CustomButton from "../components/globalContext/CustomButton";
+import UrlInputs from "../components/globalContext/URLInputs";
 import { fetchMarcas, fetchImagesByOwner } from "../api";
 import { IoArrowBackOutline } from "react-icons/io5";
-import LocationPicker from "../components/LocationPicker";
-import FadeIn from "../components/FadeIn";
+import LocationPicker from "../components/contentContext/LocationPicker";
+import FadeIn from "../components/globalContext/FadeIn";
 
 export default function Content() {
     const location = useLocation();

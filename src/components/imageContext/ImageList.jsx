@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ImageCard from "./ImageCard";
-import Content from "../pages/Content";
+import Content from "./../../pages/Content";
 
 export default function ImageList({ imagens, isMobile, isAdmin, usuario, onDelete, onAssociate }) {
     const [imagemSelecionada, setImagemSelecionada] = useState(null);

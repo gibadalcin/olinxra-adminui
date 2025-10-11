@@ -1,4 +1,4 @@
-import CustomButton from "./CustomButton";
+import CustomButton from "./../globalContext/CustomButton";
 
 const MOBILE_BREAKPOINT = 768;
 const MAIN_BG_COLOR = "#012E57"; // azul escuro

@@ -1,14 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
-import MainTitle from "../components/MainTitle";
-import Copyright from "../components/Copyright";
+import MainTitle from "../components/globalContext/MainTitle";
+import Copyright from "../components/globalContext/Copyright";
 import { useNavigate } from "react-router-dom";
-import FadeIn from "../components/FadeIn";
-import Header from "../components/Header";
+import FadeIn from "../components/globalContext/FadeIn";
+import Header from "../components/globalContext/Header";
 import { fetchAdmins, createAdmin, deleteAdmin } from "../api";
 import { getAuth } from "firebase/auth";
-import AdminForm from "../components/AdminForm";
-import AdminList from "../components/AdminList";
-import DeleteAdminModal from "../components/DeleteAdminModal";
+import AdminForm from "../components/adminContext/AdminForm";
+import AdminList from "../components/adminContext/AdminList";
+import DeleteAdminModal from "../components/adminContext/DeleteAdminModal";
 
 const MOBILE_BREAKPOINT = 768;
 const TABLET_BREAKPOINT = 1420;

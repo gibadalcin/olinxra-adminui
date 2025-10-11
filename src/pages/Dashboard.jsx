@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
-import FadeIn from "../components/FadeIn";
-import Loader from "../components/Loader";
-import Copyright from "../components/Copyright";
-import MainTitle from "../components/MainTitle";
-import CustomButton from "../components/CustomButton";
-import UserInfo from "../components/UserInfo";
-import DashboardActions from "../components/DashboardActions";
-import Header from "../components/Header";
+import FadeIn from "../components/globalContext/FadeIn";
+import Loader from "../components/globalContext/Loader";
+import Copyright from "../components/globalContext/Copyright";
+import MainTitle from "../components/globalContext/MainTitle";
+import CustomButton from "../components/globalContext/CustomButton";
+import UserInfo from "../components/globalContext/UserInfo";
+import DashboardActions from "../components/dashboardContext/DashboardActions";
+import Header from "../components/globalContext/Header";
 
 const MOBILE_BREAKPOINT = 768;
 const MAIN_BG_COLOR = "#012E57"; // Azul escuro

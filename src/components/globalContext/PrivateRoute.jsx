@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { auth } from "../firebaseConfig";
+import { auth } from "../../firebaseConfig";
 import Loader from "./Loader";
 
 export default function PrivateRoute({ children }) {

@@ -1,4 +1,4 @@
-import CustomButton from "./CustomButton";
+import CustomButton from "./../globalContext/CustomButton";
 
 export default function LoginForm({ email, setEmail, senha, setSenha, isLoading, handleLogin, isMobile }) {
     return (

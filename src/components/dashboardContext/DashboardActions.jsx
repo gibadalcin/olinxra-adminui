@@ -1,5 +1,4 @@
-import React from "react";
-import CustomButton from "./CustomButton";
+import CustomButton from "./../globalContext/CustomButton";
 
 export default function DashboardActions({ usuario, isMobile, onImages, onRegister }) {
     const USER_ADMIN_EMAIL = import.meta.env.VITE_USER_ADMIN_EMAIL;

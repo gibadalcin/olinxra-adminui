@@ -2,7 +2,7 @@ export default function Loader({ height = "60vh" }) {
     return (
         <div style={{
             width: "100vw",
-            height,
+            height: '100vh',
             display: "flex",
             alignItems: "center",
             justifyContent: "center",

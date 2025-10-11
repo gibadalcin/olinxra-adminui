@@ -1,6 +1,6 @@
-import CustomButton from "../components/CustomButton";
+import CustomButton from "./../../components/globalContext/CustomButton";
 import { FiPlus, FiX } from "react-icons/fi";
-import useIsMasterAdmin from "../hooks/useIsMasterAdmin";
+import useIsMasterAdmin from "./../../hooks/useIsMasterAdmin";
 import { useNavigate } from "react-router-dom";
 
 export default function ImageCard({ img, isMobile, isAdmin, usuario, onDelete }) {

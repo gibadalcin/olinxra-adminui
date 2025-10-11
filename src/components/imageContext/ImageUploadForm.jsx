@@ -1,4 +1,4 @@
-import CustomButton from "../components/CustomButton";
+import CustomButton from "./../../components/globalContext/CustomButton";
 
 export default function ImageUploadForm({ file, setFile, nome, setNome, isMobile, uploading, handleUpload, onDashboardClick }) {
     // Função para limpar os campos após envio

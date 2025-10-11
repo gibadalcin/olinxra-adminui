@@ -1,4 +1,4 @@
-import CustomButton from "./CustomButton";
+import CustomButton from "./../../components/globalContext/CustomButton";
 
 export default function DeleteImageModal({ open, imgToDelete, imagens, onConfirm, onClose }) {
     if (!open) return null;

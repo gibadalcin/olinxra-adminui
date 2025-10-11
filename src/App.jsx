@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
-import ErrorBoundary from "./components/ErrorBoundary";
+import ErrorBoundary from "./components/globalContext/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import ImageManager from "./pages/ImageManager";
 import Register from "./pages/Register";
-import PrivateRoute from "./components/PrivateRoute";
+import PrivateRoute from "./components/globalContext/PrivateRoute";
 import Content from "./pages/Content";
 import { auth } from "./firebaseConfig"; // importe o auth
 
