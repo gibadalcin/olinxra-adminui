@@ -1,7 +1,7 @@
 import { useMediaQuery } from "react-responsive";
 
 export default function CustomButton({ children, onClick, style = {}, ...props }) {
-    const isMobile = useMediaQuery({ maxWidth: 994 });
+    const isMobile = useMediaQuery({ maxWidth: 768 });
 
     // Detecta se o botão é redondo (borderRadius >= 50%) para remover padding
     const isRound = style?.borderRadius && (typeof style.borderRadius === "string" ? style.borderRadius.includes("%") || parseInt(style.borderRadius) >= 24 : style.borderRadius >= 24);

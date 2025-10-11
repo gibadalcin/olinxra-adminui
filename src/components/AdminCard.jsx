@@ -1,5 +1,4 @@
-
-export default function AdminCard({ admin, isMaster, isMobile, onDelete, style }) {
+export default function AdminCard({ admin, isMobile, onDelete, style, isMaster }) {
     return (
         <div
             key={admin.uid}

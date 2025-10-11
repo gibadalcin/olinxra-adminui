@@ -23,33 +23,41 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
+            <ErrorBoundary>
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/images"
           element={
-            <PrivateRoute>
-              <ImageManager />
-            </PrivateRoute>
+            <ErrorBoundary>
+              <PrivateRoute>
+                <ImageManager />
+              </PrivateRoute>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/register"
           element={
-            <PrivateRoute>
-              <Register />
-            </PrivateRoute>
+            <ErrorBoundary>
+              <PrivateRoute>
+                <Register />
+              </PrivateRoute>
+            </ErrorBoundary>
           }
         />
         <Route
           path="/content"
           element={
-            <PrivateRoute>
-              <Content />
-            </PrivateRoute>
+            <ErrorBoundary>
+              <PrivateRoute>
+                <Content />
+              </PrivateRoute>
+            </ErrorBoundary>
           }
         />
       </Routes>

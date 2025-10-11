@@ -3,18 +3,22 @@ import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import FadeIn from "../components/FadeIn";
 import Loader from "../components/Loader";
-import Header from "../components/Header";
 import Copyright from "../components/Copyright";
 import MainTitle from "../components/MainTitle";
 import CustomButton from "../components/CustomButton";
 import UserInfo from "../components/UserInfo";
 import DashboardActions from "../components/DashboardActions";
+import Header from "../components/Header";
+
+const MOBILE_BREAKPOINT = 768;
+const MAIN_BG_COLOR = "#012E57"; // Azul escuro
+const LEFT_COL_BG_COLOR = "#ffffff"; // Branco
 
 export default function Dashboard() {
-    const MOBILE_BREAKPOINT = 768;
     const [usuario, setUsuario] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showContent, setShowContent] = useState(false);
+    const [showFade, setShowFade] = useState(false);
     const navigate = useNavigate();
     const [isMobile, setIsMobile] = useState(window.innerWidth <= MOBILE_BREAKPOINT);
 
@@ -28,7 +32,10 @@ export default function Dashboard() {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             setUsuario(user);
             setLoading(false);
-            setTimeout(() => setShowContent(true), 400); // Transição suave
+            setTimeout(() => {
+                setShowContent(true);
+                setShowFade(true);
+            }, 400); // Transição suave
         });
         return () => unsubscribe();
     }, []);
@@ -39,15 +46,24 @@ export default function Dashboard() {
     };
 
     return (
-        <div>
+        <div style={{
+            background: MAIN_BG_COLOR,
+            minHeight: "100vh",
+            width: "100vw",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+        }}>
             {/* Loader aparece sobre o fundo, antes dos componentes */}
-            {(!showContent || loading) && (
+            {(loading || !showContent) && (
                 <div style={{
                     position: "absolute",
                     top: 0,
                     left: 0,
                     width: "100vw",
                     height: "100vh",
+                    background: MAIN_BG_COLOR,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -56,79 +72,75 @@ export default function Dashboard() {
                     <Loader />
                 </div>
             )}
-            <FadeIn show={showContent}>
-                {/* Conteúdo principal com fade-in */}
-                <div style={{
-                    width: "100vw",
-                    minHeight: "100vh",
-                    display: showContent ? "flex" : "none",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexDirection: isMobile ? "column" : "row",
-                }}>
-                    {/* Header só fica separado se não for mobile */}
-                    {!isMobile && (
-                        <div style={{
-                            background: "rgba(255,255,255,0.10)",
-                            padding: "2rem",
-                            borderRadius: "16px",
-                            width: '100%',
-                            height: '100%',
-                            justifyContent: "center",
-                            alignItems: "center",
-                            display: "flex",
-                            flexDirection: "column",
-                            backdropFilter: "blur(18px)",
-                            WebkitBackdropFilter: "blur(18px)",
-                            textAlign: "center",
-                        }}>
-                            <Header />
-                        </div>
-                    )}
+            <div style={{
+                width: "100%",
+                height: "100vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: isMobile ? "column" : "row",
+            }}>
+                {/* COLUNA 1: LOGOMARCA/BRANDING (Desktop Only) */}
+                {!isMobile && (
                     <div style={{
-                        padding: isMobile ? "1rem" : "2rem",
-                        borderRadius: "16px",
-                        background: "#012E57",
-                        border: "1px solid rgba(255,255,255,0.18)",
-                        width: isMobile ? '100%' : '60%',
-                        height: '100%',
-                        justifyContent: "center",
-                        alignItems: "center",
+                        width: "60%",
+                        height: "100%",
+                        background: LEFT_COL_BG_COLOR,
                         display: "flex",
                         flexDirection: "column",
-                        backdropFilter: "blur(18px)",
-                        WebkitBackdropFilter: "blur(18px)",
+                        justifyContent: "center",
+                        alignItems: "center",
                         textAlign: "center",
+                        padding: "2rem",
                     }}>
-                        {/* Header aparece junto dos componentes quando mobile */}
-                        {isMobile && <Header />}
-                        <MainTitle isMobile={isMobile}>Dashboard</MainTitle>
-                        <UserInfo usuario={usuario} isMobile={isMobile} />
-                        <DashboardActions
-                            usuario={usuario}
-                            isMobile={isMobile}
-                            onImages={() => navigate("/images")}
-                            onRegister={() => navigate("/register")}
-                        />
-                        <CustomButton
-                            onClick={handleLogout}
-                            style={{
-                                marginTop: "2rem",
-                                background: "#d32f2f",
-                                boxShadow: "0 2px 10px rgba(0,0,0,0.20)",
-                                color: "#fff",
-                                borderStyle: "solid",
-                                borderWidth: "1px",
-                                borderColor: "rgba(255,255,255,0.18)",
-                                textShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                            }}
-                        >
-                            Sair
-                        </CustomButton>
-                        <Copyright />
+                        <Header />
                     </div>
+                )}
+                {/* COLUNA 2: CONTEÚDO DO DASHBOARD */}
+                <div style={{
+                    width: isMobile ? "100%" : "40%",
+                    height: "100%",
+                    background: MAIN_BG_COLOR,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexDirection: "column",
+                }}>
+                    {/* Logomarca mobile */}
+                    {isMobile && (
+                        <Header />
+                    )}
+                    <FadeIn show={showFade} duration="0.6s" distance="40px">
+                        <div style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}>
+                            <MainTitle isMobile={isMobile}>Dashboard</MainTitle>
+                            <UserInfo usuario={usuario} isMobile={isMobile} />
+                            <DashboardActions
+                                usuario={usuario}
+                                isMobile={isMobile}
+                                onImages={() => navigate("/images")}
+                                onRegister={() => navigate("/register")}
+                            />
+                            <CustomButton
+                                onClick={handleLogout}
+                                style={{
+                                    marginTop: "2rem",
+                                    background: "#d32f2f",
+                                    boxShadow: "0 2px 10px rgba(0,0,0,0.20)",
+                                    color: "#fff",
+                                }}
+                            >
+                                Sair
+                            </CustomButton>
+                            <Copyright />
+                        </div>
+                    </FadeIn>
                 </div>
-            </FadeIn>
+            </div>
         </div>
     );
 }
