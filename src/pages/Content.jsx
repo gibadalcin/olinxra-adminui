@@ -7,7 +7,6 @@ import Copyright from "../components/Copyright";
 import CustomButton from "../components/CustomButton";
 import UrlInputs from "../components/URLInputs";
 import { fetchMarcas, fetchImagesByOwner } from "../api";
-import BrandSelect from "../components/BrandSelect";
 import { IoArrowBackOutline } from "react-icons/io5";
 import LocationPicker from "../components/LocationPicker";
 import FadeIn from "../components/FadeIn";
